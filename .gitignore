@@ -1,0 +1,8 @@
+target/
+*.class
+*.jar
+nbactions.xml
+jrebel.xml
+nb-configuration.xml
+/.project
+/.settings/
