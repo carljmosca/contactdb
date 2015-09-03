@@ -32,7 +32,7 @@ public class ContactLogic {
 
     public void cancelContact() {
         setFragmentParameter("");
-        view.clearSelection();
+        //view.clearSelection();
         //view.editContact(null);
     }
 
@@ -75,7 +75,7 @@ public class ContactLogic {
 
     public void saveContact(Contact contact) {
         view.showSaveNotification(contact.getLastName() + " updated");
-        view.clearSelection();
+        //view.clearSelection();
         //view.editContact(null);
         refreshTable();
         setFragmentParameter("");
@@ -108,7 +108,7 @@ public class ContactLogic {
     }
 
     public void newContact() {
-        view.clearSelection();
+        //view.clearSelection();
         setFragmentParameter("new");
         view.editContact(new Contact());
     }

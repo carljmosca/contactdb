@@ -46,12 +46,12 @@ public class ContactView extends CssLayout implements View {
 //        classificationManager = new ClassificationManager();
 
         table = new ContactTable();
-        table.addValueChangeListener(new ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                viewLogic.rowSelected(table. getValue());
-            }
-        });
+//        table.addValueChangeListener(new ValueChangeListener() {
+//            @Override
+//            public void valueChange(ValueChangeEvent event) {
+//                viewLogic.rowSelected(table. getValue());
+//            }
+//        });
 
         //form = new ContactForm(viewLogic, table.getContainerDataSource());
 //        form.setCategories(classificationManager.get("ContactType"));
@@ -122,13 +122,13 @@ public class ContactView extends CssLayout implements View {
         newContact.setEnabled(enabled);
     }
 
-    public void clearSelection() {
-        table.setValue(null);
-    }
-
-    public void selectRow(Contact row) {
-        table.setValue(row);
-    }
+//    public void clearSelection() {
+//        table.setValue(null);
+//    }
+//
+//    public void selectRow(Contact row) {
+//        table.setValue(row);
+//    }
 
     public void editContact(Contact contact) {
         if (contact != null) {
@@ -141,9 +141,9 @@ public class ContactView extends CssLayout implements View {
         form.editContact(contact);
     }
 
-    public Contact getSelectedRow() {
-        return table.getValue();
-    }
+//    public Contact getSelectedRow() {
+//        return table.getValue();
+//    }
 
     public void showContacts(Collection<Contact> contacts) {
         //BeanItemContainer<Contact> container = table.getContainerDataSource();

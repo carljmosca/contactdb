@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.vaadin.addons.lazyquerycontainer</groupId>
             <artifactId>vaadin-lazyquerycontainer</artifactId>
-            <version>7.4.0.1</version>
+            <version>7.4.5.1-SNAPSHOT</version>
         </dependency>
 
         <!--        <dependency>
@@ -111,6 +111,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.2.5.RELEASE</version>
             </plugin>
         </plugins>
     </build>

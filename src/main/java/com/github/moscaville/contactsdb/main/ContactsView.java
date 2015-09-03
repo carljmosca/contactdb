@@ -6,7 +6,6 @@
 package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.Sections;
-import com.vaadin.event.ShortcutAction;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -17,7 +16,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -26,18 +26,27 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
  *
  * @author moscac
  */
-@SpringView(name = "ContactsView")
+//@SpringView(name = "ContactsView")
+
+@SpringView(name = "")
 @SideBarItem(sectionId = Sections.CONTACTS,
-        caption = "All",
-        order = 1)
+                caption = "All",
+                order = 1)
 @FontAwesomeIcon(FontAwesome.TABLE)
 @ViewScope
 public class ContactsView extends CssLayout implements View {
 
     private ContactTable contactTable;
-    
-    public ContactsView() {
+    final Panel pnlMain = new Panel();
+    VerticalLayout vLayout = new VerticalLayout();
+    HorizontalLayout hLayout = new HorizontalLayout();
+    HorizontalLayout vButtons = new HorizontalLayout();
+    Button btnDuplicate = new Button("Duplicate");
+    Button btnContinue = new Button("Continue");
+    private final List<ContactDetailView> contactDetailViews;
 
+    public ContactsView() {
+        contactDetailViews = new ArrayList<>();
     }
 
     @PostConstruct
@@ -45,27 +54,28 @@ public class ContactsView extends CssLayout implements View {
 
         vLayout.setMargin(true);
         vButtons.setMargin(true);
+        vButtons.addComponent(btnContinue);
+        vButtons.addComponent(btnDuplicate);
         hLayout.setSizeFull();
-        
+
         contactTable = new ContactTable();
         vLayout.addComponent(contactTable);
-        
         addComponent(vLayout);
         addComponent(vButtons);
-
         setSizeFull();
-    }
 
-    final Panel pnlMain = new Panel();
-    VerticalLayout vLayout = new VerticalLayout();
-    HorizontalLayout hLayout = new HorizontalLayout();
-    HorizontalLayout vButtons = new HorizontalLayout();
-    Button btnContinue = new Button("Continue");
+        btnContinue.addClickListener((Button.ClickEvent event) -> {
+            ContactDetailView v = new ContactDetailView();
+            contactDetailViews.add(v);
+            v.setContactId(contactDetailViews.size());
+            vLayout.addComponent(v);
+        });
+
+    }
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-}
 
+}

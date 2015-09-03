@@ -6,6 +6,7 @@
 package com.github.moscaville.contactsdb.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -19,5 +20,9 @@ public class ContactRecords {
 
     private List<ContactWrapper> records;
     private String offset;
+    
+    public ContactRecords() {
+        records = new ArrayList<>();
+    }
     
 }
