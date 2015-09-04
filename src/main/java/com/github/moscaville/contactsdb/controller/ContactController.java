@@ -8,7 +8,7 @@ package com.github.moscaville.contactsdb.controller;
 import com.github.moscaville.contactsdb.dto.Contact;
 import com.github.moscaville.contactsdb.dto.ContactRecords;
 import com.github.moscaville.contactsdb.dto.ContactWrapper;
-import com.github.moscaville.contactsdb.manager.AirtableAuthorizationInterceptor;
+import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
