@@ -42,7 +42,6 @@ public class ContactsView extends CssLayout implements View {
     HorizontalLayout hLayout = new HorizontalLayout();
     HorizontalLayout vButtons = new HorizontalLayout();
     Button btnDuplicate = new Button("Duplicate");
-    Button btnContinue = new Button("Continue");
     private final List<ContactDetailView> contactDetailViews;
 
     public ContactsView() {
@@ -54,7 +53,6 @@ public class ContactsView extends CssLayout implements View {
 
         vLayout.setMargin(true);
         vButtons.setMargin(true);
-        vButtons.addComponent(btnContinue);
         vButtons.addComponent(btnDuplicate);
         hLayout.setSizeFull();
 
@@ -64,7 +62,7 @@ public class ContactsView extends CssLayout implements View {
         addComponent(vButtons);
         setSizeFull();
 
-        btnContinue.addClickListener((Button.ClickEvent event) -> {
+        btnDuplicate.addClickListener((Button.ClickEvent event) -> {
             ContactDetailView v = new ContactDetailView();
             contactDetailViews.add(v);
             v.setContactId(contactDetailViews.size());

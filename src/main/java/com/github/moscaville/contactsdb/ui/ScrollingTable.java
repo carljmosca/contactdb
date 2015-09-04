@@ -5,21 +5,21 @@
  */
 package com.github.moscaville.contactsdb.ui;
 
-import com.vaadin.ui.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.tepi.filtertable.FilterTable;
 
 /**
  *
  * @author moscac
  */
-public class ScrollingTable extends Table {
+public class ScrollingTable extends FilterTable {
 
     List<ScrollingTableEventListener> listeners = new ArrayList();
 
     private void fireEvent(String event, Integer value) {
-        listeners.stream().forEach((listener) -> {
+        listeners.stream().forEach((ScrollingTableEventListener listener) -> {
             listener.processEvent(event, value);
         });
     }
