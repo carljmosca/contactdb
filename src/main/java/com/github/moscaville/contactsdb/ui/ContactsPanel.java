@@ -35,12 +35,10 @@ public class ContactsPanel extends Panel {
 
     @Override
     public void changeVariables(Object source, Map<String, Object> variables) {
-        System.out.println("changeVariables");
     }
 
     @Override
     public void focus() {
         super.focus();
-        System.out.println("focus");
     }
 }

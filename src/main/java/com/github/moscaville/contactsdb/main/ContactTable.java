@@ -52,17 +52,21 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         // Show categories as a comma separated list
 //        setConverter("contactTypes", new CollectionToStringConverter());
         addScrollListener(this);
+        addHeaderClickListener((HeaderClickEvent event) -> {
+            controller.setSortColumn(event.getPropertyId().toString());
+            reset();
+        });
         loadRecords();
 
     }
 
     private void reset() {
-
+        container.removeAllItems();
+        loadRecords();
     }
-
+    
     private void loadRecords() {
         container.addAll(controller.loadItems(BATCH_SIZE, container.size()));
-
     }
 
     /**

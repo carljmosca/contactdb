@@ -58,15 +58,16 @@ public class ContactsView extends CssLayout implements View {
 
         contactTable = new ContactTable();
         vLayout.addComponent(contactTable);
-        addComponent(vLayout);
+        vLayout.setHeight("75%");
         addComponent(vButtons);
+        addComponent(vLayout);
         setSizeFull();
 
         btnDuplicate.addClickListener((Button.ClickEvent event) -> {
-            ContactDetailView v = new ContactDetailView();
-            contactDetailViews.add(v);
-            v.setContactId(contactDetailViews.size());
-            vLayout.addComponent(v);
+//            ContactDetailView v = new ContactDetailView();
+//            contactDetailViews.add(v);
+//            v.setContactId(contactDetailViews.size());
+//            vLayout.addComponent(v);
         });
 
     }

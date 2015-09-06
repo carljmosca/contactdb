@@ -5,16 +5,16 @@
  */
 package com.github.moscaville.contactsdb.ui;
 
+import com.vaadin.ui.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.tepi.filtertable.FilterTable;
 
 /**
  *
  * @author moscac
  */
-public class ScrollingTable extends FilterTable {
+public class ScrollingTable extends Table {
 
     List<ScrollingTableEventListener> listeners = new ArrayList();
 
@@ -33,7 +33,6 @@ public class ScrollingTable extends FilterTable {
         super.changeVariables(source, variables);
         Map<String, Object> map = (Map<String, Object>)variables;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            System.out.println(entry.getKey());
             switch (entry.getKey()) {
                 case "lastToBeRendered" :
                     if (entry.getValue() instanceof Integer) {

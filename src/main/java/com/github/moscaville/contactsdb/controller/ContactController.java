@@ -9,6 +9,7 @@ import com.github.moscaville.contactsdb.dto.Contact;
 import com.github.moscaville.contactsdb.dto.ContactRecords;
 import com.github.moscaville.contactsdb.dto.ContactWrapper;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
+import com.github.moscaville.contactsdb.util.Utility;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -20,11 +21,12 @@ import org.springframework.web.client.RestTemplate;
  */
 public class ContactController {
 
-    private final boolean OFFLINE_TEST = true;
+    private final boolean OFFLINE_TEST = false;
     private final RestTemplate restTemplate;
     private final List<ClientHttpRequestInterceptor> interceptors;
-    private final String AIRTABLE_ENDPOINT_URL; 
+    private final String AIRTABLE_ENDPOINT_URL;
     private final int TEST_CONTAINER_SIZE = 10000;
+    private String sortColumn;
 
     public ContactController() {
 
@@ -42,27 +44,27 @@ public class ContactController {
         if (!OFFLINE_TEST) {
             StringBuilder uri = new StringBuilder();
             uri.append(AIRTABLE_ENDPOINT_URL).append("Contact?limit=").append(count);
-//            if (definition != null && definition.getSortPropertyIds() != null && definition.getSortPropertyIds().length > 0) {
-//                String sortField = Utility.toHumanName((String) definition.getSortPropertyIds()[0]);
-//                uri.append("&sortField=").append(sortField);
-//            }
+            if (sortColumn != null) {
+                uri.append("&sortField=").append(Utility.toHumanName(sortColumn));
+            }
             ContactRecords contactRecords = restTemplate.getForObject(uri.toString(), ContactRecords.class);
             contactRecords.getRecords().stream().forEach((contactWrapper) -> {
                 result.add(contactWrapper.getContact());
             });
-        } else {
-            //result = new ContactRecords();
-            if (itemsLoaded < TEST_CONTAINER_SIZE) {
-                for (int i = 0; i < count; i++) {
-                    ContactWrapper contactWrapper = new ContactWrapper();
-                    Contact contact = getDummyContact(i + itemsLoaded);
-                    contactWrapper.setId(contact.getId());
-                    contactWrapper.setContact(contact);
-                    result.add(contact);
-                }
+        } else if (itemsLoaded < TEST_CONTAINER_SIZE) {
+            for (int i = 0; i < count; i++) {
+                ContactWrapper contactWrapper = new ContactWrapper();
+                Contact contact = getDummyContact(i + itemsLoaded);
+                contactWrapper.setId(contact.getId());
+                contactWrapper.setContact(contact);
+                result.add(contact);
             }
         }
         return result;
+    }
+
+    public void setSortColumn(String sortColumn) {
+        this.sortColumn = sortColumn;
     }
 
     private Contact getDummyContact(int i) {

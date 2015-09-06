@@ -35,7 +35,6 @@ public class ContactDetailView extends Panel {
     @Override
     public void focus() {
         super.focus();
-        System.out.println("painted " + contactId);
     }
         
 }

@@ -20,7 +20,6 @@ public class ContactLayout extends VerticalLayout implements Listener {
 
     @Override
     public void componentEvent(Event event) {
-        System.out.println(event.toString());
     }
     
 }

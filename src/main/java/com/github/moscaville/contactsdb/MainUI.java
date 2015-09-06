@@ -6,6 +6,7 @@
 package com.github.moscaville.contactsdb;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.spring.annotation.SpringUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.components.AbstractSideBar;
@@ -17,6 +18,7 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
  */
 @SpringUI(path = "/main")
 @Theme("sidebar") // A custom theme based on Valo
+@Widgetset("AppWidgetst.gwt.xml")
 public class MainUI extends AbstractSideBarUI {
 
     @Autowired
