@@ -83,9 +83,11 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
             SimpleStringFilter firstNameFilter = new SimpleStringFilter(
                     "firstName", filterString, true, false);
             SimpleStringFilter companyFilter = new SimpleStringFilter(
-                    "company", filterString, true, false);
+                    "companyName", filterString, true, false);
+            SimpleStringFilter cityFilter = new SimpleStringFilter(
+                    "city", filterString, true, false);
             container.addContainerFilter(new Or(lastNameFilter, firstNameFilter,
-                    companyFilter));
+                    companyFilter, cityFilter));
         }
 
     }

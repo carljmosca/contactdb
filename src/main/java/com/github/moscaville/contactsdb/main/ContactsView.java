@@ -38,9 +38,9 @@ public class ContactsView extends CssLayout implements View {
 
     private ContactTable contactTable;
     final Panel pnlMain = new Panel();
-    VerticalLayout vLayout = new VerticalLayout();
+    VerticalLayout vLayout;
     HorizontalLayout hLayout = new HorizontalLayout();
-    HorizontalLayout vControls = new HorizontalLayout();
+    HorizontalLayout vControls;
     private Button btnEdit;
     private Button btnDuplicate;    
     private TextField tfFilter;
@@ -57,7 +57,10 @@ public class ContactsView extends CssLayout implements View {
         tfFilter.setImmediate(true);
         tfFilter.setInputPrompt("Filter");
         
+        vLayout = new VerticalLayout();
         vLayout.setMargin(true);
+        vControls = new HorizontalLayout();
+        vControls.setSpacing(true);
         vControls.setMargin(true);
         vControls.addComponent(tfFilter);
         vControls.addComponent(btnEdit);
@@ -72,7 +75,7 @@ public class ContactsView extends CssLayout implements View {
         setSizeFull();
         
         tfFilter.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            
+            contactTable.setFilter(tfFilter.getValue());
         });
 
         btnEdit.addClickListener((Button.ClickEvent event) -> {
