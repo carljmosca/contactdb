@@ -34,10 +34,10 @@
         <vaadin.theme>valo</vaadin.theme>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <docker.image.prefix>carljmosca</docker.image.prefix>
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.vaadin.spring.extensions</groupId>
             <artifactId>vaadin-spring-ext-boot</artifactId>
@@ -67,18 +67,6 @@
             <version>1.0.1</version>
         </dependency>
         
-<!--        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>filteringtable</artifactId>
-            <version>0.9.13.v7</version>
-        </dependency>-->
-
-        <!--        <dependency>
-            <groupId>org.vaadin.spring</groupId>
-            <artifactId>parent-pom</artifactId>
-            <version>0.0.7-SNAPSHOT</version>
-        </dependency>-->
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -115,6 +103,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.2.5.RELEASE</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>com.vaadin</groupId>
@@ -141,7 +136,22 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.3.2</version>
+                <configuration>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 	
