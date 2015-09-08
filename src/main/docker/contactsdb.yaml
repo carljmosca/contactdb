@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: contactsdb
+  labels:
+    app: contactsdb
+spec:
+  containers:
+    -
+      args:
+        - ""
+      command:
+        - ""
+      env:
+        -
+          name: "AIRTABLE_API_KEY"
+          value: "YOUR_KEY"
+        -
+          name: "AIRTABLE_ENDPOINT_URL"
+          value: "https://api.airtable.com/v0/YOUR_URI/"
+      image: "carljmosca/contactsdb"
+      imagePullPolicy: ""
+      name: "contactsdb"
+      ports:
+        -
+          containerPort: 8080
+          protocol: "tcp"
+      resources:
+        cpu: ""
+        memory: ""
+  restartPolicy: ""
+  volumes:
+    -
+      emptyDir:
+        medium: ""
+      name: ""
+      secret:
+        secretName: ""

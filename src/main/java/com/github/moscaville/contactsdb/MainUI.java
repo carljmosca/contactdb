@@ -5,7 +5,6 @@
  */
 package com.github.moscaville.contactsdb;
 
-import com.github.moscaville.contactsdb.dto.Contact;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.spring.annotation.SpringUI;
@@ -23,8 +22,6 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
 @Widgetset("AppWidgetst.gwt.xml")
 public class MainUI extends AbstractSideBarUI {
 
-    private Contact contact;
-    
     @Autowired
     ValoSideBar sideBar;
 
@@ -33,16 +30,8 @@ public class MainUI extends AbstractSideBarUI {
         return sideBar;
     }
     
-    public static MainUI get() {
-        return (MainUI) UI.getCurrent();
+    public static ValoSideBarUI get() {
+        return (ValoSideBarUI) UI.getCurrent();
     }
 
-    public Contact getContact() {
-        return contact;
-    }
-
-    public void setContact(Contact contact) {
-        this.contact = contact;
-    }
-    
 }

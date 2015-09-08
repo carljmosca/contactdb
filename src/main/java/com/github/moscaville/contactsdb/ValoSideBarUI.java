@@ -16,6 +16,7 @@
 package com.github.moscaville.contactsdb;
 
 
+import com.github.moscaville.contactsdb.dto.Contact;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -39,6 +40,8 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
     @Autowired
     ValoSideBar sideBar;
+    
+    private Contact contact;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -65,4 +68,13 @@ public class ValoSideBarUI extends AbstractSideBarUI {
     protected AbstractSideBar getSideBar() {
         return sideBar;
     }
+    
+        public Contact getContact() {
+        return contact;
+    }
+
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+    
 }
