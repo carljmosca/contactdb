@@ -7,18 +7,28 @@ package com.github.moscaville.contactsdb.controller;
 
 import com.github.moscaville.contactsdb.dto.Contact;
 import com.github.moscaville.contactsdb.dto.ContactRecords;
+import com.github.moscaville.contactsdb.dto.ContactResponse;
 import com.github.moscaville.contactsdb.dto.ContactWrapper;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import com.github.moscaville.contactsdb.util.Utility;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 /**
  *
  * @author moscac
  */
+@Component
 public class ContactController {
 
     private final boolean OFFLINE_TEST = false;
@@ -38,6 +48,43 @@ public class ContactController {
         AIRTABLE_ENDPOINT_URL = envValue + (envValue != null && envValue.endsWith("/") ? "" : "/");
     }
 
+    public String saveItem(Contact contact) {
+
+        if (OFFLINE_TEST) {
+            return "";
+        }
+        String result = null;
+        ContactWrapper contactWrapper = new ContactWrapper();
+        contactWrapper.setContact(contact);
+        StringBuilder sUri = new StringBuilder();
+        sUri.append(AIRTABLE_ENDPOINT_URL).append("Contact");
+        URI uri;
+        if (contact.getId() == null) {
+            try {
+                uri = new URI(sUri.toString());
+                ResponseEntity<ContactResponse> response = restTemplate.postForEntity(uri, contactWrapper, ContactResponse.class);
+                if (response != null && response.getBody() != null) {
+                    result = response.getBody().getId();
+                }
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(ContactController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            sUri.append("/").append(contact.getId());
+            try {
+                uri = new URI(sUri.toString());
+                HttpEntity<ContactWrapper> httpEntity = new HttpEntity(contactWrapper);
+                ResponseEntity<ContactResponse> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity, ContactResponse.class);
+                if (response != null) {
+                    result = "";
+                }
+            } catch (URISyntaxException ex) {
+                Logger.getLogger(ContactController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
+    }
+
     public List<Contact> loadItems(int count, int itemsLoaded) {
 
         List<Contact> result = new ArrayList<>();
@@ -49,6 +96,7 @@ public class ContactController {
             }
             ContactRecords contactRecords = restTemplate.getForObject(uri.toString(), ContactRecords.class);
             contactRecords.getRecords().stream().forEach((contactWrapper) -> {
+                contactWrapper.getContact().setId(contactWrapper.getId());
                 result.add(contactWrapper.getContact());
             });
         } else if (itemsLoaded < TEST_CONTAINER_SIZE) {

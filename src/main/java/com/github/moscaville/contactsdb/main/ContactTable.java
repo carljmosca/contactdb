@@ -10,27 +10,26 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-/**
- * Table of products, handling the visual presentation and filtering of a set of
- * items. This version uses an in-memory data source that is suitable for small
- * data sets.
- */
+@Component
 public class ContactTable extends ScrollingTable implements ScrollingTableEventListener {
 
     private final BeanItemContainer container;
     private final List<Contact> contacts;
-    private final ContactController controller;
+    @Autowired
+    ContactController controller;
     private static final int BATCH_SIZE = 20;
 
     public ContactTable() {
 
-        controller = new ContactController();
         contacts = new ArrayList<>();
         container = new BeanItemContainer(Contact.class, contacts);
-        init();
     }
 
+    @PostConstruct
     private void init() {
 
         setSizeFull();

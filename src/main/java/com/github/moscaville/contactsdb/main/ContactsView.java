@@ -22,6 +22,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -37,7 +38,8 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @ViewScope
 public class ContactsView extends CssLayout implements View {
 
-    private ContactTable contactTable;
+    @Autowired
+    ContactTable contactTable;
     final Panel pnlMain = new Panel();
     VerticalLayout vLayout;
     HorizontalLayout hLayout = new HorizontalLayout();
@@ -68,7 +70,7 @@ public class ContactsView extends CssLayout implements View {
         vControls.addComponent(btnDuplicate);
         hLayout.setSizeFull();
 
-        contactTable = new ContactTable();
+        //contactTable = new ContactTable();
         vLayout.addComponent(contactTable);
         vLayout.setHeight("75%");
         addComponent(vControls);

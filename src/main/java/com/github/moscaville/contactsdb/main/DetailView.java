@@ -7,6 +7,7 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.dto.Contact;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.navigator.View;
@@ -19,6 +20,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -34,6 +36,8 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @ViewScope
 public class DetailView extends CssLayout implements View {
 
+    @Autowired
+    ContactController controller;
     public static final String VIEW_NAME = "DetailView";
     protected BeanFieldGroup<Contact> fieldGroup;
     private Contact contact;
@@ -77,7 +81,7 @@ public class DetailView extends CssLayout implements View {
 
         addressLayout = new HorizontalLayout();
         addressLayout.setSpacing(true);
-        addressLayout.setWidth("400px");
+        addressLayout.setWidth("400px   ");
         address = createTextField("address", addressLayout);
         address.setWidth("90%");
 
@@ -90,6 +94,9 @@ public class DetailView extends CssLayout implements View {
         buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         btnSave = new Button("Save");
+        btnSave.addClickListener((Button.ClickEvent event) -> {
+            controller.saveItem(contact);
+        });
         buttonLayout.addComponent(btnSave);
 
         mainLayout.addComponent(nameLayout);
