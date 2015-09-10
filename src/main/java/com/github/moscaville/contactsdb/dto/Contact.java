@@ -6,39 +6,18 @@
 package com.github.moscaville.contactsdb.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author moscac
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Contact {
+public class Contact extends ContactPojo {
 
     private String id;
-    @JsonProperty("Company Name")
-    private String companyName;
-    @JsonProperty("First Name")
-    private String firstName;
-    @JsonProperty("Last Name")
-    private String lastName;
-    @JsonProperty("Address")
-    private String address;
-    @JsonProperty("City")
-    private String city;
-    @JsonProperty("State")
-    private String state;
-    @JsonProperty("Zip")
-    private String zip;
-    @JsonProperty("Email")
-    private String email;
-    @JsonProperty("Work Phone")
-    private String workPhone;
-    @JsonProperty("Cell Phone")
-    private String cellPhone;
-    @JsonProperty("Category")
-    private String category;
-
+    
 }

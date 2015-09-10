@@ -8,19 +8,19 @@ package com.github.moscaville.contactsdb.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+
 /**
  *
  * @author moscac
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ContactWrapper {
+public class ContactPojoWrapper {
     
-    private String id;
     @JsonProperty("fields")
-    private Contact contact;
+    private ContactPojo contactPojo;
 
-    public ContactWrapper() {
+    public ContactPojoWrapper() {
     }    
     
 }

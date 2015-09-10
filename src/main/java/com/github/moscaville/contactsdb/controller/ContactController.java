@@ -6,8 +6,10 @@
 package com.github.moscaville.contactsdb.controller;
 
 import com.github.moscaville.contactsdb.dto.Contact;
+import com.github.moscaville.contactsdb.dto.ContactPojo;
 import com.github.moscaville.contactsdb.dto.ContactRecords;
 import com.github.moscaville.contactsdb.dto.ContactResponse;
+import com.github.moscaville.contactsdb.dto.ContactPojoWrapper;
 import com.github.moscaville.contactsdb.dto.ContactWrapper;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import com.github.moscaville.contactsdb.util.Utility;
@@ -17,11 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -54,15 +61,17 @@ public class ContactController {
             return "";
         }
         String result = null;
-        ContactWrapper contactWrapper = new ContactWrapper();
-        contactWrapper.setContact(contact);
+        ContactPojoWrapper contactPojoWrapper = new ContactPojoWrapper();
+        ContactPojo contactPojo = new ContactPojo();
+        BeanUtils.copyProperties(contactPojo, contact);
+        contactPojoWrapper.setContactPojo(contactPojo);
         StringBuilder sUri = new StringBuilder();
         sUri.append(AIRTABLE_ENDPOINT_URL).append("Contact");
         URI uri;
         if (contact.getId() == null) {
             try {
                 uri = new URI(sUri.toString());
-                ResponseEntity<ContactResponse> response = restTemplate.postForEntity(uri, contactWrapper, ContactResponse.class);
+                ResponseEntity<ContactResponse> response = restTemplate.postForEntity(uri, contactPojoWrapper, ContactResponse.class);
                 if (response != null && response.getBody() != null) {
                     result = response.getBody().getId();
                 }
@@ -70,13 +79,20 @@ public class ContactController {
                 Logger.getLogger(ContactController.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            sUri.append("/").append(contact.getId());
+            sUri.append("/").append(contact.getId());                        
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            headers.add("HeaderName", "value");
+            headers.add("Content-Type", "application/json");
+            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            HttpEntity<ContactPojoWrapper> request = new HttpEntity<>(contactPojoWrapper, headers);
             try {
                 uri = new URI(sUri.toString());
-                HttpEntity<ContactWrapper> httpEntity = new HttpEntity(contactWrapper);
-                ResponseEntity<ContactResponse> response = restTemplate.exchange(uri, HttpMethod.PUT, httpEntity, ContactResponse.class);
-                if (response != null) {
-                    result = "";
+                restTemplate.put(uri, request);
+                result = "";
+            } catch (RestClientException e) {
+                if (e instanceof HttpStatusCodeException) {
+                    String errorResponse = ((HttpStatusCodeException) e).getResponseBodyAsString();
+                    System.out.println(errorResponse);
                 }
             } catch (URISyntaxException ex) {
                 Logger.getLogger(ContactController.class.getName()).log(Level.SEVERE, null, ex);
