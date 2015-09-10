@@ -63,7 +63,7 @@ public class ContactController {
         String result = null;
         ContactPojoWrapper contactPojoWrapper = new ContactPojoWrapper();
         ContactPojo contactPojo = new ContactPojo();
-        BeanUtils.copyProperties(contactPojo, contact);
+        BeanUtils.copyProperties(contact, contactPojo);
         contactPojoWrapper.setContactPojo(contactPojo);
         StringBuilder sUri = new StringBuilder();
         sUri.append(AIRTABLE_ENDPOINT_URL).append("Contact");

@@ -17,7 +17,6 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ContactPojo {
 
-    private String id;
     @JsonProperty("Company Name")
     private String companyName;
     @JsonProperty("First Name")
