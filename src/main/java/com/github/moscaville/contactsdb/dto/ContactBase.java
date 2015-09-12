@@ -15,7 +15,7 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ContactPojo {
+public class ContactBase {
 
     @JsonProperty("Company Name")
     private String companyName;

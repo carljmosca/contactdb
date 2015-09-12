@@ -6,10 +6,10 @@
 package com.github.moscaville.contactsdb.controller;
 
 import com.github.moscaville.contactsdb.dto.Contact;
-import com.github.moscaville.contactsdb.dto.ContactPojo;
+import com.github.moscaville.contactsdb.dto.ContactBase;
 import com.github.moscaville.contactsdb.dto.ContactRecords;
 import com.github.moscaville.contactsdb.dto.ContactResponse;
-import com.github.moscaville.contactsdb.dto.ContactPojoWrapper;
+import com.github.moscaville.contactsdb.dto.ContactBaseWrapper;
 import com.github.moscaville.contactsdb.dto.ContactWrapper;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import com.github.moscaville.contactsdb.util.Utility;
@@ -61,8 +61,8 @@ public class ContactController {
             return "";
         }
         String result = null;
-        ContactPojoWrapper contactPojoWrapper = new ContactPojoWrapper();
-        ContactPojo contactPojo = new ContactPojo();
+        ContactBaseWrapper contactPojoWrapper = new ContactBaseWrapper();
+        ContactBase contactPojo = new ContactBase();
         BeanUtils.copyProperties(contact, contactPojo);
         contactPojoWrapper.setContactPojo(contactPojo);
         StringBuilder sUri = new StringBuilder();
@@ -84,7 +84,7 @@ public class ContactController {
             headers.add("HeaderName", "value");
             headers.add("Content-Type", "application/json");
             restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-            HttpEntity<ContactPojoWrapper> request = new HttpEntity<>(contactPojoWrapper, headers);
+            HttpEntity<ContactBaseWrapper> request = new HttpEntity<>(contactPojoWrapper, headers);
             try {
                 uri = new URI(sUri.toString());
                 restTemplate.put(uri, request);

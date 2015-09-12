@@ -15,12 +15,12 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ContactPojoWrapper {
+public class ContactBaseWrapper {
     
     @JsonProperty("fields")
-    private ContactPojo contactPojo;
+    private ContactBase contactPojo;
 
-    public ContactPojoWrapper() {
+    public ContactBaseWrapper() {
     }    
     
 }
