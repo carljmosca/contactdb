@@ -8,7 +8,7 @@ package com.github.moscaville.contactsdb.main;
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
 import com.github.moscaville.contactsdb.controller.ContactController;
-import com.github.moscaville.contactsdb.dto.Contact;
+import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -39,8 +39,8 @@ public class DetailView extends CssLayout implements View {
     @Autowired
     ContactController controller;
     public static final String VIEW_NAME = "DetailView";
-    protected BeanFieldGroup<Contact> fieldGroup;
-    private Contact contact;
+    protected BeanFieldGroup<ContactRecord> fieldGroup;
+    private ContactRecord contact;
     private TextField firstName;
     private TextField lastName;
     private TextField companyName;
@@ -95,7 +95,7 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.setSpacing(true);
         btnSave = new Button("Save");
         btnSave.addClickListener((Button.ClickEvent event) -> {
-            controller.saveItem(contact);
+            controller.saveItem(contact, contact.getId());
         });
         buttonLayout.addComponent(btnSave);
 
@@ -118,7 +118,7 @@ public class DetailView extends CssLayout implements View {
     }
 
     private void bind() {
-        fieldGroup = new BeanFieldGroup<>(Contact.class);
+        fieldGroup = new BeanFieldGroup<>(ContactRecord.class);
         contact = MainUI.get().getContact();
         fieldGroup.setItemDataSource(contact);
         fieldGroup.setBuffered(false);

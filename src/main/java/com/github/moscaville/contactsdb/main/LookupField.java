@@ -1,6 +1,6 @@
 package com.github.moscaville.contactsdb.main;
 
-import com.github.moscaville.contactsdb.dto.Classification;
+import com.github.moscaville.contactsdb.dto.LookupBase;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,19 +16,19 @@ import java.util.HashSet;
  * A custom Field implementation that allows selecting a set of categories using
  * checkboxes rather than multi-selection in a list/table or a TwinColSelect.
  */
-public class ClassificationField extends CustomField<Set<Classification>> {
+public class LookupField extends CustomField<Set<LookupBase>> {
 
     private VerticalLayout options;
-    private final Map<Classification, CheckBox> checkboxes = new HashMap<>();
+    private final Map<LookupBase, CheckBox> checkboxes = new HashMap<>();
     private boolean updatingField = false;
-    private final Set<Classification> classifications;
+    private final Set<LookupBase> classifications;
 
-    public ClassificationField() {
+    public LookupField() {
         options = new VerticalLayout();
         classifications = new HashSet<>();
     }
 
-    public ClassificationField(String caption) {
+    public LookupField(String caption) {
         this();
         setCaption(caption);
     }
@@ -44,16 +44,16 @@ public class ClassificationField extends CustomField<Set<Classification>> {
      *
      * @param categories all available categories
      */
-    public void setOptions(Collection<Classification> categories) {
+    public void setOptions(Collection<LookupBase> categories) {
         options.removeAllComponents();
         checkboxes.clear();
         categories.stream().map((category) -> {
-            final CheckBox box = new CheckBox(category.getDescription());
+            final CheckBox box = new CheckBox(category.getName());
             checkboxes.put(category, box);
             box.addValueChangeListener((com.vaadin.data.Property.ValueChangeEvent event) -> {
                 if (!updatingField) {
-                    Set<Classification> oldCategories = getValue();
-                    Set<Classification> categories1;
+                    Set<LookupBase> oldCategories = getValue();
+                    Set<LookupBase> categories1;
                     if (oldCategories != null) {
                         categories1 = new HashSet<>(oldCategories);
                     } else {
@@ -79,30 +79,30 @@ public class ClassificationField extends CustomField<Set<Classification>> {
     }
 
     @Override
-    protected void setInternalValue(Set<Classification> newValue) {
+    protected void setInternalValue(Set<LookupBase> newValue) {
         classifications.clear();
         updatingField = true;
         super.setInternalValue(newValue);
         if (newValue != null) {
             classifications.addAll(newValue);
-            for (Classification category : checkboxes.keySet()) {
+            for (LookupBase category : checkboxes.keySet()) {
                 checkboxes.get(category).setValue(valueExists(newValue, category));
             }
         } else {
-            for (Classification category : checkboxes.keySet()) {
+            for (LookupBase category : checkboxes.keySet()) {
                 checkboxes.get(category).setValue(false);
             }
         }
         updatingField = false;
     }
 
-    private boolean valueExists(Set<Classification> set, Classification value) {
-        return set.stream().anyMatch((classification) -> (classification.getDescription().equals(value.getDescription())));
+    private boolean valueExists(Set<LookupBase> set, LookupBase value) {
+        return set.stream().anyMatch((classification) -> (classification.getName().equals(value.getName())));
     }
     
-    private void removeValue(Set<Classification> set, Classification value) {
-        for (Classification classification : set) {
-            if (classification.getDescription().equals(value.getDescription())) {
+    private void removeValue(Set<LookupBase> set, LookupBase value) {
+        for (LookupBase classification : set) {
+            if (classification.getName().equals(value.getName())) {
                 set.remove(classification);
                 return;
             }
@@ -110,12 +110,12 @@ public class ClassificationField extends CustomField<Set<Classification>> {
     }
 
     @Override
-    public Set<Classification> getInternalValue() {
+    public Set<LookupBase> getInternalValue() {
         return classifications;
     }
 
     @Override
-    public Set<Classification> getValue() {
+    public Set<LookupBase> getValue() {
         return getInternalValue();
     }
     

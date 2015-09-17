@@ -7,7 +7,7 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
-import com.github.moscaville.contactsdb.dto.Contact;
+import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -22,6 +22,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import javax.annotation.PostConstruct;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
@@ -92,8 +93,12 @@ public class ContactsView extends CssLayout implements View {
         });
 
         btnDuplicate.addClickListener((Button.ClickEvent event) -> {
-            Contact contact = new Contact();
-            editContact(contact);
+            ContactRecord selected = getSelectedContact();
+            if (selected != null) {
+                ContactRecord contact = new ContactRecord();
+                BeanUtils.copyProperties(selected, contact);
+                editContact(contact);
+            }
         });
 
     }
@@ -103,16 +108,16 @@ public class ContactsView extends CssLayout implements View {
 
     }
 
-    private void editContact(Contact contact) {
-        MainUI.get().setContact(contact);
+    private void editContact(ContactRecord contact) {
+        MainUI.get().setContactRecord(contact);
         MainUI.getCurrent().getNavigator().navigateTo(DetailView.VIEW_NAME);
     }
 
-    private Contact getSelectedContact() {
-        Contact contact = null;
+    private ContactRecord getSelectedContact() {
+        ContactRecord contact = null;
         Object selected = contactTable.getValue();
-        if (selected instanceof Contact) {
-            contact = (Contact) selected;
+        if (selected instanceof ContactRecord) {
+            contact = (ContactRecord) selected;
         }
         return contact;
     }

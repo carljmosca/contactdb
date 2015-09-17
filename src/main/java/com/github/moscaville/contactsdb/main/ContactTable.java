@@ -1,6 +1,6 @@
 package com.github.moscaville.contactsdb.main;
 
-import com.github.moscaville.contactsdb.dto.Contact;
+import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.ui.ScrollingTable;
 import com.github.moscaville.contactsdb.ui.ScrollingTableEventListener;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class ContactTable extends ScrollingTable implements ScrollingTableEventListener {
 
     private final BeanItemContainer container;
-    private final List<Contact> contacts;
+    private final List<ContactRecord> contacts;
     @Autowired
     ContactController controller;
     private static final int BATCH_SIZE = 20;
@@ -26,7 +26,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     public ContactTable() {
 
         contacts = new ArrayList<>();
-        container = new BeanItemContainer(Contact.class, contacts);
+        container = new BeanItemContainer(ContactRecord.class, contacts);
     }
 
     @PostConstruct
@@ -65,7 +65,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     }
     
     private void loadRecords() {
-        container.addAll(controller.loadItems(BATCH_SIZE, container.size()));
+        container.addAll(controller.loadItems(BATCH_SIZE, container.size(), new ContactRecord()));
     }
 
     /**
