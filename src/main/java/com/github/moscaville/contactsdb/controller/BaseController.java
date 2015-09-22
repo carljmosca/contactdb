@@ -121,8 +121,9 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             for (Object o : recordCollection.getRecords()) {
                 RecordWrapper recordWrapper = (RecordWrapper) o;
                 Object r = BeanUtils.instantiate(t.getClass());
-                BeanUtils.copyProperties(recordWrapper, r);
+                //BeanUtils.copyProperties(recordWrapper, r);
                 BeanUtils.copyProperties(recordWrapper.getFields(), r);
+                ((AtBaseRecord)r).setId(recordWrapper.getId());
                 result.add((T)r);
             }
         }

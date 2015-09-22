@@ -37,10 +37,10 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
 
         setContainerDataSource(container);
         setVisibleColumns("companyName", "firstName", "lastName",
-                "email", "workPhone", "cellPhone", "address", "city", "state", "zip");
+                "email", "workPhone", "cellPhone");
 
         setColumnHeaders("Company", "First", "Last", "Email", "Work Phone",
-                "Cell Phone", "Address", "City", "State", "Zip");
+                "Cell Phone");
         setColumnCollapsingAllowed(true);
         setColumnCollapsed("integerProperty", true);
         setColumnCollapsed("bigDecimalProperty", true);

@@ -5,6 +5,7 @@
  */
 package com.github.moscaville.contactsdb.controller;
 
+import com.github.moscaville.contactsdb.dto.CategoryCollection;
 import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.RecordCollection;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,12 @@ public class CategoryController extends BaseController<CategoryRecord, String> {
 
     @Override
     protected String getAirTableName() {
-        return "";
+        return "Category";
     }
 
     @Override
     protected RecordCollection getRecordCollection() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new CategoryCollection();
     }
     
 }

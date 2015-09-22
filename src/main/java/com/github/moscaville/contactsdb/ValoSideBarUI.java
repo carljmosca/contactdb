@@ -15,11 +15,7 @@
  */
 package com.github.moscaville.contactsdb;
 
-import com.github.moscaville.contactsdb.controller.CategoryController;
-import com.github.moscaville.contactsdb.controller.RepresentativeController;
-import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
-import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
@@ -28,7 +24,6 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.sidebar.components.AbstractSideBar;
 import org.vaadin.spring.sidebar.components.ValoSideBar;
@@ -45,14 +40,7 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
     @Autowired
     ValoSideBar sideBar;
-
-    @Autowired
-    CategoryController categoryController;
-    @Autowired
-    RepresentativeController representativeController;
-
-    private List<CategoryRecord> categories;
-    private List<RepresentativeRecord> representatives;
+    
     private ContactRecord contact;
 
     @Override
@@ -66,8 +54,8 @@ public class ValoSideBarUI extends AbstractSideBarUI {
         MenuBar.MenuItem settingsItem = menuBar.addItem("", FontAwesome.WRENCH, null);
 
         sideBar.setHeader(header);
-        categories = categoryController.loadItems(100, 0, new CategoryRecord());
-        representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
+        //categories = categoryController.loadItems(100, 0, new CategoryRecord());
+        //representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
     }
 
     private void showLogo() {
@@ -91,20 +79,4 @@ public class ValoSideBarUI extends AbstractSideBarUI {
         this.contact = contact;
     }
 
-    public List<CategoryRecord> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<CategoryRecord> categories) {
-        this.categories = categories;
-    }
-
-    public List<RepresentativeRecord> getRepresentatives() {
-        return representatives;
-    }
-
-    public void setRepresentatives(List<RepresentativeRecord> representatives) {
-        this.representatives = representatives;
-    }  
-    
 }

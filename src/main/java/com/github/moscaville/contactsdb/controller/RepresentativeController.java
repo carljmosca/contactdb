@@ -8,11 +8,13 @@ package com.github.moscaville.contactsdb.controller;
 import com.github.moscaville.contactsdb.dto.RecordCollection;
 import com.github.moscaville.contactsdb.dto.RepresentativeCollection;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author moscac
  */
+@Component
 public class RepresentativeController extends BaseController<RepresentativeRecord, String> {
 
     @Override

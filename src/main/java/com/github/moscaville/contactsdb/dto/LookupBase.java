@@ -34,5 +34,10 @@ public class LookupBase extends AtBaseRecord {
     public void setContacts(String[] contacts) {
         this.contacts = contacts;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
     
 }
