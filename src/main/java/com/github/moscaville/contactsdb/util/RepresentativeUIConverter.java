@@ -5,7 +5,7 @@
  */
 package com.github.moscaville.contactsdb.util;
 
-import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
+import com.github.moscaville.contactsdb.dto.LookupBase;
 import com.vaadin.data.util.converter.Converter;
 import java.util.List;
 import java.util.Locale;
@@ -16,9 +16,9 @@ import java.util.Locale;
  */
 public class RepresentativeUIConverter implements Converter<Object, String[]> {
 
-    private final List<RepresentativeRecord> representativeRecords;
+    private final List<LookupBase> representativeRecords;
 
-    public RepresentativeUIConverter(List<RepresentativeRecord> representativeRecords) {
+    public RepresentativeUIConverter(List<LookupBase> representativeRecords) {
         this.representativeRecords = representativeRecords;
     }
 
@@ -26,7 +26,7 @@ public class RepresentativeUIConverter implements Converter<Object, String[]> {
     public String convertToPresentation(String[] value, Class<? extends Object> targetType, Locale locale) throws ConversionException {
         if (value != null) {
 
-            for (RepresentativeRecord representativeRecord : representativeRecords) {
+            for (LookupBase representativeRecord : representativeRecords) {
                 if (representativeRecord.getId().equals(value[0])) {
                     return representativeRecord.getName();
                 }
@@ -40,7 +40,7 @@ public class RepresentativeUIConverter implements Converter<Object, String[]> {
         if (value == null) {
             return null;
         }
-        for (RepresentativeRecord representativeRecord : representativeRecords) {
+        for (LookupBase representativeRecord : representativeRecords) {
             if (representativeRecord.getName().equals(value)) {
                 return new String[]{representativeRecord.getId()};
             }

@@ -12,9 +12,10 @@ import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.RepresentativeController;
 import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
+import com.github.moscaville.contactsdb.dto.LookupBase;
 import com.github.moscaville.contactsdb.dto.RecordWrapper;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
-import com.github.moscaville.contactsdb.util.LookupConverter;
+import com.github.moscaville.contactsdb.util.CategoryUIConverter;
 import com.github.moscaville.contactsdb.util.RepresentativeUIConverter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.converter.Converter;
@@ -32,7 +33,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,7 +73,7 @@ public class DetailView extends CssLayout implements View {
     private TextField email;
     private TextField workPhone;
     private TextField cellPhone;
-    private ListSelect category;
+    private ComboBox category;
     private ComboBox account;
     private VerticalLayout mainLayout;
     private HorizontalLayout nameLayout;
@@ -84,8 +84,8 @@ public class DetailView extends CssLayout implements View {
     private HorizontalLayout buttonLayout;
     private Button btnSave;
     private Button btnDuplicate;
-    private List<String> categories;
-    private List<RepresentativeRecord> representatives;
+    private List<LookupBase> categories;
+    private List<LookupBase> representatives;
 
     public DetailView() {
 
@@ -113,7 +113,7 @@ public class DetailView extends CssLayout implements View {
         if (categoryRecords != null) {
             categoryRecords.stream().forEach((categoryRecord) -> {
                 if (categoryRecord.getName() != null) {
-                    categories.add(categoryRecord.getName());
+                    categories.add(categoryRecord);
                 }
             });
         }
@@ -129,7 +129,7 @@ public class DetailView extends CssLayout implements View {
 
         classificationLayout = new HorizontalLayout();
         classificationLayout.setSpacing(true);
-        //category = createListSelect("Category", categories, classificationLayout);
+        category = createComboBox("Category", categories, classificationLayout);
         account = createComboBox("Account", representatives, classificationLayout);
 
         addressLayout = new HorizontalLayout();
@@ -184,26 +184,14 @@ public class DetailView extends CssLayout implements View {
         return textField;
     }
 
-    private ListSelect createListSelect(String label, List<String> items, HorizontalLayout horizontalLayout) {
-        ListSelect listSelect = new ListSelect(label);
-        listSelect.setMultiSelect(true);
-        listSelect.setRows(3);
-        listSelect.addItems(items);
-        
-        LookupConverter lookupConverter = new LookupConverter(new HashSet<>(items));
-        listSelect.setConverter((Converter)lookupConverter);
-        horizontalLayout.addComponent(listSelect);
-        return listSelect;
-    }
-    
-    private ComboBox createComboBox(String label, List<RepresentativeRecord> items, HorizontalLayout horizontalLayout) {
+    private ComboBox createComboBox(String label, List<LookupBase> items, HorizontalLayout horizontalLayout) {
         ComboBox comboBox = new ComboBox();
-        RepresentativeUIConverter converter = new RepresentativeUIConverter(representatives);
+        RepresentativeUIConverter converter = new RepresentativeUIConverter(items);
         comboBox.setConverter(converter);
         comboBox.setInputPrompt(label);
         List<String> ids = new ArrayList<>();
         items.stream().forEach((item) -> {
-                ids.add(item.getName());
+            ids.add(item.getName());
         });
         comboBox.addItems(ids);
         horizontalLayout.addComponent(comboBox);

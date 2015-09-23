@@ -6,7 +6,6 @@
 package com.github.moscaville.contactsdb.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
 import com.github.moscaville.contactsdb.dto.AtBaseRecord;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import com.github.moscaville.contactsdb.util.Utility;
@@ -94,8 +93,6 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             headers.add("HeaderName", "value");
             headers.add("Content-Type", "application/json");
             ObjectMapper objectMapper = new ObjectMapper();
-            //objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-            //objectMapper.configure(SerializationConfig.Feature.DEFAULT_VIEW_INCLUSION, false);
             MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
             messageConverter.setObjectMapper(objectMapper);
             restTemplate.getMessageConverters().add(messageConverter);
