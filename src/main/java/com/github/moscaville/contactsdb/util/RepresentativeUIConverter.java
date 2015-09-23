@@ -31,8 +31,6 @@ public class RepresentativeUIConverter implements Converter<Object, String[]> {
                     return representativeRecord.getName();
                 }
             }
-
-//            return value[0];
         }
         return null;
     }

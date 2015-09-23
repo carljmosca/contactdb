@@ -5,6 +5,8 @@
  */
 package com.github.moscaville.contactsdb.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
 import com.github.moscaville.contactsdb.dto.AtBaseRecord;
 import com.github.moscaville.contactsdb.util.AirtableAuthorizationInterceptor;
 import com.github.moscaville.contactsdb.util.Utility;
@@ -63,14 +65,16 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
 
     protected abstract RecordCollection getRecordCollection();
 
-    public String saveItem(T t, ID id) {
+    public String saveItem(RecordWrapper<T> recordWrapper, ID id) {
 
         if (OFFLINE_TEST) {
             return "";
         }
         String result = null;
-        RecordWrapper<T> recordWrapper = new RecordWrapper<>();
-        BeanUtils.copyProperties(t, recordWrapper);
+        
+        //RecordWrapper<T> recordWrapper = new RecordWrapper<>();
+        //BeanUtils.copyProperties(t, recordWrapper.getFields());
+        
         StringBuilder sUri = new StringBuilder();
         sUri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName());
         URI uri;
@@ -89,7 +93,12 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
             headers.add("HeaderName", "value");
             headers.add("Content-Type", "application/json");
-            restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+            ObjectMapper objectMapper = new ObjectMapper();
+            //objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+            //objectMapper.configure(SerializationConfig.Feature.DEFAULT_VIEW_INCLUSION, false);
+            MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+            messageConverter.setObjectMapper(objectMapper);
+            restTemplate.getMessageConverters().add(messageConverter);
             HttpEntity<RecordWrapper> request = new HttpEntity<>(recordWrapper, headers);
             try {
                 uri = new URI(sUri.toString());

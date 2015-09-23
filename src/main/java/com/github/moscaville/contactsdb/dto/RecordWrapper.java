@@ -5,24 +5,38 @@
  */
 package com.github.moscaville.contactsdb.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 
 /**
  *
  * @author moscac
  * @param <T>
  */
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordWrapper<T> {
     
+    @JsonIgnore
     private String id;
-    @JsonProperty("fields")
     private T fields;
+    
+    @JsonIgnore
+    public String getId() {
+        return id;
+    }
 
-    public RecordWrapper() {
+    @JsonProperty
+    public void setId(String id) {
+        this.id = id;
     }    
-        
+
+    public T getFields() {
+        return fields;
+    }
+
+    public void setFields(T fields) {
+        this.fields = fields;
+    }
+          
 }

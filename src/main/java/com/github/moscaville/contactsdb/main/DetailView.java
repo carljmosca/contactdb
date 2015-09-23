@@ -12,6 +12,7 @@ import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.RepresentativeController;
 import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
+import com.github.moscaville.contactsdb.dto.RecordWrapper;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.util.LookupConverter;
 import com.github.moscaville.contactsdb.util.RepresentativeUIConverter;
@@ -27,7 +28,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import java.lang.reflect.InvocationTargetException;
@@ -74,7 +74,7 @@ public class DetailView extends CssLayout implements View {
     private TextField workPhone;
     private TextField cellPhone;
     private ListSelect category;
-    private NativeSelect account;
+    private ComboBox account;
     private VerticalLayout mainLayout;
     private HorizontalLayout nameLayout;
     private HorizontalLayout addressLayout;
@@ -148,7 +148,9 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.setSpacing(true);
         btnSave = new Button("Save");
         btnSave.addClickListener((Button.ClickEvent event) -> {
-            controller.saveItem(contact, contact.getId());
+            RecordWrapper<ContactRecord> recordWrapper = new RecordWrapper();
+            recordWrapper.setFields(contact);
+            controller.saveItem(recordWrapper, contact.getId());
         });
         buttonLayout.addComponent(btnSave);
         btnDuplicate = new Button("Duplicate");
@@ -194,11 +196,11 @@ public class DetailView extends CssLayout implements View {
         return listSelect;
     }
     
-    private NativeSelect createComboBox(String label, List<RepresentativeRecord> items, HorizontalLayout horizontalLayout) {
-        NativeSelect comboBox = new NativeSelect();
+    private ComboBox createComboBox(String label, List<RepresentativeRecord> items, HorizontalLayout horizontalLayout) {
+        ComboBox comboBox = new ComboBox();
         RepresentativeUIConverter converter = new RepresentativeUIConverter(representatives);
         comboBox.setConverter(converter);
-        //comboBox.setInputPrompt(label);
+        comboBox.setInputPrompt(label);
         List<String> ids = new ArrayList<>();
         items.stream().forEach((item) -> {
                 ids.add(item.getName());

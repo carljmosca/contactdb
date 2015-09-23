@@ -43,4 +43,5 @@ public class ContactRecord extends AtBaseRecord {
     private String[] category;
     @JsonProperty("Account")
     private String[] account;
+    
 }
