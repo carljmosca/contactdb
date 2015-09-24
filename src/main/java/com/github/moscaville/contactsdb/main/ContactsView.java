@@ -7,6 +7,7 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
@@ -39,8 +40,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @ViewScope
 public class ContactsView extends CssLayout implements View {
 
-    @Autowired
-    ContactTable contactTable;
+    private ContactTable contactTable;
     final Panel pnlMain = new Panel();
     VerticalLayout vLayout;
     HorizontalLayout hLayout = new HorizontalLayout();
@@ -48,6 +48,8 @@ public class ContactsView extends CssLayout implements View {
     private Button btnEdit;
     private Button btnDuplicate;
     private TextField tfFilter;
+    @Autowired
+    ContactController controller;
 
     public ContactsView() {
     }
@@ -55,6 +57,7 @@ public class ContactsView extends CssLayout implements View {
     @PostConstruct
     void init() {
 
+        contactTable = new ContactTable(controller);
         btnEdit = new Button("Edit");
         btnDuplicate = new Button("Duplicate");
         tfFilter = new TextField();

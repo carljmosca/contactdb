@@ -11,26 +11,24 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
 public class ContactTable extends ScrollingTable implements ScrollingTableEventListener {
 
-    private final BeanItemContainer container;
-    private final List<ContactRecord> contacts;
-    @Autowired
-    ContactController controller;
+    private BeanItemContainer container;
+    private List<ContactRecord> contacts;
+    private final ContactController controller;
+
     private static final int BATCH_SIZE = 20;
 
-    public ContactTable() {
+    public ContactTable(ContactController controller) {
+        this.controller = controller;
+        init();
+    }
+
+    private void init() {
 
         contacts = new ArrayList<>();
         container = new BeanItemContainer(ContactRecord.class, contacts);
-    }
-
-    @PostConstruct
-    private void init() {
 
         setSizeFull();
         addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
@@ -63,7 +61,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         container.removeAllItems();
         loadRecords();
     }
-    
+
     private void loadRecords() {
         container.addAll(controller.loadItems(BATCH_SIZE, container.size(), new ContactRecord()));
     }
