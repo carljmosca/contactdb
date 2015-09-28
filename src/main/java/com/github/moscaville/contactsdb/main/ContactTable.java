@@ -2,26 +2,38 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.controller.ContactController;
+import com.github.moscaville.contactsdb.dto.CategoryRecord;
+import com.github.moscaville.contactsdb.dto.LevelRecord;
+import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.ui.ScrollingTable;
 import com.github.moscaville.contactsdb.ui.ScrollingTableEventListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.PostConstruct;
 
 public class ContactTable extends ScrollingTable implements ScrollingTableEventListener {
 
     private BeanItemContainer container;
     private List<ContactRecord> contacts;
     private final ContactController controller;
+    private final List<LevelRecord> levels;
+    private final List<CategoryRecord> categories;
+    private final List<RepresentativeRecord> representatives;
 
     private static final int BATCH_SIZE = 20;
 
-    public ContactTable(ContactController controller) {
+    public ContactTable(ContactController controller, List<CategoryRecord> categories,
+            List<LevelRecord> levels, List<RepresentativeRecord> representatives) {
         this.controller = controller;
+        this.levels = levels;
+        this.categories = categories;
+        this.representatives = representatives;
         init();
     }
 
@@ -30,15 +42,21 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         contacts = new ArrayList<>();
         container = new BeanItemContainer(ContactRecord.class, contacts);
 
+        addGeneratedColumn("categoryName", new LookupColumnGenerator());
+        addGeneratedColumn("levelName", new LookupColumnGenerator());
+        addGeneratedColumn("accountName", new LookupColumnGenerator());
+
         setSizeFull();
         addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
 
         setContainerDataSource(container);
         setVisibleColumns("companyName", "firstName", "lastName",
-                "email", "workPhone", "cellPhone");
+                "email", "workPhone", "cellPhone", "address", "city",
+                "state", "zip", "categoryName", "levelName", "accountName");
 
         setColumnHeaders("Company", "First", "Last", "Email", "Work Phone",
-                "Cell Phone");
+                "Cell Phone", "Address", "City", "State", "Postal Code",
+                "Category", "Level", "Account");
         setColumnCollapsingAllowed(true);
         setColumnCollapsed("integerProperty", true);
         setColumnCollapsed("bigDecimalProperty", true);
@@ -93,6 +111,65 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     public void processEvent(String event, Integer value) {
         if ("lastToBeRendered".equals(event) && (value > (0.9 * container.size()))) {
             loadRecords();
+        }
+    }
+
+    class LookupColumnGenerator implements Table.ColumnGenerator {
+
+        public LookupColumnGenerator() {
+        }
+
+        /**
+         * Generates the cell containing the Double value. The column is
+         * irrelevant in this use case.
+         */
+        @Override
+        public Component generateCell(Table source, Object record,
+                Object column) {
+            Label label = new Label();
+            label.addStyleName("column-type-value");
+            label.addStyleName("column-" + (String) column);
+            StringBuilder result = new StringBuilder();
+            ContactRecord contactRecord = (ContactRecord) record;
+            if ("categoryName".equals(column)) {
+                if (contactRecord.getCategory() != null) {
+                    for (String s : contactRecord.getCategory()) {
+                        categories.stream().filter((r) -> (s != null && s.equals(r.getId()))).forEach((r) -> {
+                            if (result.length() > 0) {
+                                result.append(",");
+                            }
+                            result.append(r.getName());
+                        });
+                    }
+                }
+            } else if ("levelName".equals(column)) {
+                if (contactRecord.getLevel() != null) {
+                    for (String s : contactRecord.getCategory()) {
+                        levels.stream().filter((r) -> (s != null && s.equals(r.getId()))).forEach((r) -> {
+                            if (result.length() > 0) {
+                                result.append(",");
+                            }
+                            result.append(r.getName());
+                        });
+                    }
+                }
+            } else if ("accountName".equals(column)) {
+                if (contactRecord.getAccount() != null) {
+                    for (String s : contactRecord.getCategory()) {
+                        representatives.stream().filter((r) -> (s != null && s.equals(r.getId()))).forEach((r) -> {
+                            if (result.length() > 0) {
+                                result.append(",");
+                            }
+                            result.append(r.getName());
+                        });
+                    }
+                }
+            }
+            if (result.length() == 0) {
+                return null;
+            }
+            label.setCaption(result.toString());
+            return label;
         }
     }
 

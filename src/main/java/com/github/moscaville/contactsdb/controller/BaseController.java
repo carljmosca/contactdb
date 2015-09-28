@@ -70,10 +70,9 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             return "";
         }
         String result = null;
-        
+
         //RecordWrapper<T> recordWrapper = new RecordWrapper<>();
         //BeanUtils.copyProperties(t, recordWrapper.getFields());
-        
         StringBuilder sUri = new StringBuilder();
         sUri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName());
         URI uri;
@@ -118,8 +117,10 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
         List<T> result = new ArrayList<>();
         if (!OFFLINE_TEST) {
             StringBuilder uri = new StringBuilder();
-            uri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName()).
-                    append("?limit=").append(count);
+            uri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName());
+            if (count > 0) {
+                uri.append("?limit=").append(count);
+            }
             if (sortColumn != null) {
                 uri.append("&sortField=").append(Utility.toHumanName(sortColumn));
             }
@@ -129,8 +130,8 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
                 Object r = BeanUtils.instantiate(t.getClass());
                 //BeanUtils.copyProperties(recordWrapper, r);
                 BeanUtils.copyProperties(recordWrapper.getFields(), r);
-                ((AtBaseRecord)r).setId(recordWrapper.getId());
-                result.add((T)r);
+                ((AtBaseRecord) r).setId(recordWrapper.getId());
+                result.add((T) r);
             }
         }
         return result;

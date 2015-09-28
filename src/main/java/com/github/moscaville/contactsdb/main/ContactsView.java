@@ -7,8 +7,14 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
+import com.github.moscaville.contactsdb.controller.LevelController;
+import com.github.moscaville.contactsdb.controller.RepresentativeController;
+import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
+import com.github.moscaville.contactsdb.dto.LevelRecord;
+import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -22,6 +28,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +57,12 @@ public class ContactsView extends CssLayout implements View {
     private TextField tfFilter;
     @Autowired
     ContactController controller;
+    @Autowired
+    RepresentativeController representativeController;
+    @Autowired
+    CategoryController categoryController;
+    @Autowired
+    LevelController levelController;
 
     public ContactsView() {
     }
@@ -57,7 +70,12 @@ public class ContactsView extends CssLayout implements View {
     @PostConstruct
     void init() {
 
-        contactTable = new ContactTable(controller);
+        List<CategoryRecord> categories = categoryController.loadItems(100, 0, new CategoryRecord());
+        List<LevelRecord> levels = levelController.loadItems(100, 0, new LevelRecord());
+        List<RepresentativeRecord> representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
+        
+        contactTable = new ContactTable(controller, categories, levels, representatives);
+                                 
         btnEdit = new Button("Edit");
         btnDuplicate = new Button("Duplicate");
         tfFilter = new TextField();

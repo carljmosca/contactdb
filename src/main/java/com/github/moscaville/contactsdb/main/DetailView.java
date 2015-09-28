@@ -9,16 +9,16 @@ import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
 import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
+import com.github.moscaville.contactsdb.controller.LevelController;
 import com.github.moscaville.contactsdb.controller.RepresentativeController;
 import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
+import com.github.moscaville.contactsdb.dto.LevelRecord;
 import com.github.moscaville.contactsdb.dto.LookupBase;
 import com.github.moscaville.contactsdb.dto.RecordWrapper;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
-import com.github.moscaville.contactsdb.util.CategoryUIConverter;
 import com.github.moscaville.contactsdb.util.RepresentativeUIConverter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -28,7 +28,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +60,8 @@ public class DetailView extends CssLayout implements View {
     CategoryController categoryController;
     @Autowired
     RepresentativeController representativeController;
+    @Autowired
+    LevelController levelController;
     public static final String VIEW_NAME = "DetailView";
     protected BeanFieldGroup<ContactRecord> fieldGroup;
     private ContactRecord contact;
@@ -73,19 +75,24 @@ public class DetailView extends CssLayout implements View {
     private TextField email;
     private TextField workPhone;
     private TextField cellPhone;
+    private TextArea notes;
     private ComboBox category;
     private ComboBox account;
+    private ComboBox level;
     private VerticalLayout mainLayout;
     private HorizontalLayout nameLayout;
     private HorizontalLayout addressLayout;
     private HorizontalLayout address2Layout;
     private HorizontalLayout emailPhoneLayout;
     private HorizontalLayout classificationLayout;
+    private HorizontalLayout notesLayout;
     private HorizontalLayout buttonLayout;
     private Button btnSave;
     private Button btnDuplicate;
+    private Button btnCancel;
     private List<LookupBase> categories;
     private List<LookupBase> representatives;
+    private List<LookupBase> levels;
 
     public DetailView() {
 
@@ -126,11 +133,21 @@ public class DetailView extends CssLayout implements View {
                 }
             });
         }
+        List<LevelRecord> levelRecords = levelController.loadItems(100, 0, new LevelRecord());
+        levels = new ArrayList<>();
+        if (levelRecords != null) {
+            levelRecords.stream().forEach((levelRecord) -> {
+                if (levelRecord.getName() != null) {
+                    levels.add(levelRecord);
+                }
+            });
+        }
 
         classificationLayout = new HorizontalLayout();
         classificationLayout.setSpacing(true);
         category = createComboBox("Category", categories, classificationLayout);
         account = createComboBox("Account", representatives, classificationLayout);
+        level = createComboBox("Level", levels, classificationLayout);
 
         addressLayout = new HorizontalLayout();
         addressLayout.setSpacing(true);
@@ -144,6 +161,10 @@ public class DetailView extends CssLayout implements View {
         state = createTextField("state", address2Layout);
         zip = createTextField("zip", address2Layout);
 
+        notesLayout = new HorizontalLayout();
+        notesLayout.setSpacing(true);
+        notes = createNotesField("notes", notesLayout);
+
         buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
         btnSave = new Button("Save");
@@ -153,6 +174,11 @@ public class DetailView extends CssLayout implements View {
             controller.saveItem(recordWrapper, contact.getId());
         });
         buttonLayout.addComponent(btnSave);
+        btnCancel = new Button("Cancel");
+        btnCancel.addClickListener((Button.ClickEvent event) -> {
+            
+        });
+        buttonLayout.addComponent(btnCancel);
         btnDuplicate = new Button("Duplicate");
         btnDuplicate.addClickListener((Button.ClickEvent event) -> {
             ContactRecord duplicate;
@@ -164,12 +190,14 @@ public class DetailView extends CssLayout implements View {
                 Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
+        buttonLayout.addComponent(btnDuplicate);
 
         mainLayout.addComponent(nameLayout);
         mainLayout.addComponent(classificationLayout);
         mainLayout.addComponent(emailPhoneLayout);
         mainLayout.addComponent(addressLayout);
         mainLayout.addComponent(address2Layout);
+        mainLayout.addComponent(notesLayout);
         mainLayout.addComponent(buttonLayout);
         addComponent(mainLayout);
         bind();
@@ -182,6 +210,15 @@ public class DetailView extends CssLayout implements View {
             horizontalLayout.addComponent(textField);
         }
         return textField;
+    }
+
+    private TextArea createNotesField(String inputPrompt, HorizontalLayout horizontalLayout) {
+        TextArea textArea = new TextArea();
+        textArea.setInputPrompt(inputPrompt);
+        if (horizontalLayout != null) {
+            horizontalLayout.addComponent(textArea);
+        }
+        return textArea;
     }
 
     private ComboBox createComboBox(String label, List<LookupBase> items, HorizontalLayout horizontalLayout) {

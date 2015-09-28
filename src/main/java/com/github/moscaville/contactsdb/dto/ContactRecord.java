@@ -39,9 +39,13 @@ public class ContactRecord extends AtBaseRecord {
     private String workPhone;
     @JsonProperty("Cell Phone")
     private String cellPhone;
+    @JsonProperty("Notes")
+    private String notes;
     @JsonProperty("Category")
     private String[] category;
     @JsonProperty("Account")
     private String[] account;
+    @JsonProperty("Level")
+    private String[] level;
     
 }
