@@ -42,24 +42,27 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         contacts = new ArrayList<>();
         container = new BeanItemContainer(ContactRecord.class, contacts);
 
-        addGeneratedColumn("categoryName", new LookupColumnGenerator());
-        addGeneratedColumn("levelName", new LookupColumnGenerator());
-        addGeneratedColumn("accountName", new LookupColumnGenerator());
-
         setSizeFull();
         addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
 
+        addContainerProperty("categoryName", String.class, null, "Category", null, null);
+        addContainerProperty("levelName", String.class, null, "Level", null, null);
+        addContainerProperty("accountName", String.class, null, "Account", null, null);
+        addGeneratedColumn("categoryName", new LookupColumnGenerator());
+        addGeneratedColumn("levelName", new LookupColumnGenerator());
+        addGeneratedColumn("accountName", new LookupColumnGenerator());
         setContainerDataSource(container);
+
         setVisibleColumns("companyName", "firstName", "lastName",
                 "email", "workPhone", "cellPhone", "address", "city",
                 "state", "zip", "categoryName", "levelName", "accountName");
 
-        setColumnHeaders("Company", "First", "Last", "Email", "Work Phone",
-                "Cell Phone", "Address", "City", "State", "Postal Code",
-                "Category", "Level", "Account");
+        setColumnHeaders("Company", "First", "Last", 
+                "Email", "Work Phone", "Cell Phone", "Address", "City", 
+                "State", "Postal Code", "Category", "Level", "Account");
         setColumnCollapsingAllowed(true);
-        setColumnCollapsed("integerProperty", true);
-        setColumnCollapsed("bigDecimalProperty", true);
+        //setColumnCollapsed("integerProperty", true);
+        //setColumnCollapsed("bigDecimalProperty", true);
 
         setSelectable(true);
         setImmediate(true);
@@ -144,7 +147,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
                 }
             } else if ("levelName".equals(column)) {
                 if (contactRecord.getLevel() != null) {
-                    for (String s : contactRecord.getCategory()) {
+                    for (String s : contactRecord.getLevel()) {
                         levels.stream().filter((r) -> (s != null && s.equals(r.getId()))).forEach((r) -> {
                             if (result.length() > 0) {
                                 result.append(",");
@@ -155,7 +158,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
                 }
             } else if ("accountName".equals(column)) {
                 if (contactRecord.getAccount() != null) {
-                    for (String s : contactRecord.getCategory()) {
+                    for (String s : contactRecord.getAccount()) {
                         representatives.stream().filter((r) -> (s != null && s.equals(r.getId()))).forEach((r) -> {
                             if (result.length() > 0) {
                                 result.append(",");
@@ -168,7 +171,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
             if (result.length() == 0) {
                 return null;
             }
-            label.setCaption(result.toString());
+            label.setValue(result.toString());
             return label;
         }
     }

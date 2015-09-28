@@ -118,9 +118,8 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
         if (!OFFLINE_TEST) {
             StringBuilder uri = new StringBuilder();
             uri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName());
-            if (count > 0) {
-                uri.append("?limit=").append(count);
-            }
+            count = count <= 0 || count > 100 ? 100 : count;
+            uri.append("?limit=").append(count);
             if (sortColumn != null) {
                 uri.append("&sortField=").append(Utility.toHumanName(sortColumn));
             }
