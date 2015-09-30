@@ -53,11 +53,11 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         addGeneratedColumn("accountName", new LookupColumnGenerator());
         setContainerDataSource(container);
 
-        setVisibleColumns("companyName", "firstName", "lastName",
+        setVisibleColumns("selected", "companyName", "firstName", "lastName",
                 "email", "workPhone", "cellPhone", "address", "city",
                 "state", "zip", "categoryName", "levelName", "accountName");
 
-        setColumnHeaders("Company", "First", "Last", 
+        setColumnHeaders("", "Company", "First", "Last", 
                 "Email", "Work Phone", "Cell Phone", "Address", "City", 
                 "State", "Postal Code", "Category", "Level", "Account");
         setColumnCollapsingAllowed(true);

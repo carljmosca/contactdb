@@ -19,6 +19,7 @@ import com.github.moscaville.contactsdb.dto.RecordWrapper;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.util.RepresentativeUIConverter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FontAwesome;
@@ -64,6 +65,7 @@ public class DetailView extends CssLayout implements View {
     LevelController levelController;
     public static final String VIEW_NAME = "DetailView";
     protected BeanFieldGroup<ContactRecord> fieldGroup;
+    protected BeanItem<ContactRecord> contactRecordBeanItem;
     private ContactRecord contact;
     private TextField firstName;
     private TextField lastName;
@@ -87,6 +89,7 @@ public class DetailView extends CssLayout implements View {
     private HorizontalLayout classificationLayout;
     private HorizontalLayout notesLayout;
     private HorizontalLayout buttonLayout;
+    private Button btnNew;
     private Button btnSave;
     private Button btnDuplicate;
     private Button btnCancel;
@@ -167,6 +170,11 @@ public class DetailView extends CssLayout implements View {
 
         buttonLayout = new HorizontalLayout();
         buttonLayout.setSpacing(true);
+        btnNew = new Button("New");
+        btnNew.addClickListener((Button.ClickEvent event) -> {
+            populateFields(new ContactRecord());
+        });
+        buttonLayout.addComponent(btnNew);
         btnSave = new Button("Save");
         btnSave.addClickListener((Button.ClickEvent event) -> {
             RecordWrapper<ContactRecord> recordWrapper = new RecordWrapper();
@@ -176,7 +184,7 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.addComponent(btnSave);
         btnCancel = new Button("Cancel");
         btnCancel.addClickListener((Button.ClickEvent event) -> {
-            
+            fieldGroup.discard();
         });
         buttonLayout.addComponent(btnCancel);
         btnDuplicate = new Button("Duplicate");
@@ -184,7 +192,7 @@ public class DetailView extends CssLayout implements View {
             ContactRecord duplicate;
             try {
                 duplicate = (ContactRecord) BeanUtils.cloneBean(contact);
-                contact = duplicate;
+                populateFields(duplicate);
                 contact.setId(null);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
                 Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
@@ -206,6 +214,8 @@ public class DetailView extends CssLayout implements View {
     private TextField createTextField(String inputPrompt, HorizontalLayout horizontalLayout) {
         TextField textField = new TextField();
         textField.setInputPrompt(inputPrompt);
+        textField.setImmediate(true);
+        textField.setNullRepresentation("");
         if (horizontalLayout != null) {
             horizontalLayout.addComponent(textField);
         }
@@ -215,6 +225,8 @@ public class DetailView extends CssLayout implements View {
     private TextArea createNotesField(String inputPrompt, HorizontalLayout horizontalLayout) {
         TextArea textArea = new TextArea();
         textArea.setInputPrompt(inputPrompt);
+        textArea.setImmediate(true);
+        textArea.setNullRepresentation("");
         if (horizontalLayout != null) {
             horizontalLayout.addComponent(textArea);
         }
@@ -226,6 +238,7 @@ public class DetailView extends CssLayout implements View {
         RepresentativeUIConverter converter = new RepresentativeUIConverter(items);
         comboBox.setConverter(converter);
         comboBox.setInputPrompt(label);
+        comboBox.setImmediate(true);
         List<String> ids = new ArrayList<>();
         items.stream().forEach((item) -> {
             ids.add(item.getName());
@@ -239,10 +252,28 @@ public class DetailView extends CssLayout implements View {
         fieldGroup = new BeanFieldGroup<>(ContactRecord.class);
         contact = MainUI.get().getContact();
         fieldGroup.setItemDataSource(contact);
-        fieldGroup.setBuffered(false);
+        fieldGroup.setBuffered(true);
         fieldGroup.bindMemberFields(this);
+        contactRecordBeanItem = fieldGroup.getItemDataSource();
     }
 
+    private void populateFields(ContactRecord c) {
+        firstName.setValue(c.getFirstName());
+        lastName.setValue(c.getLastName());
+        companyName.setValue(c.getCompanyName());
+        address.setValue(c.getAddress());        
+        city.setValue(c.getCity());
+        state.setValue(c.getState());
+        zip.setValue(c.getZip());
+        cellPhone.setValue(c.getCellPhone());
+        workPhone.setValue(c.getWorkPhone());
+        email.setValue(c.getEmail());
+        notes.setValue(c.getNotes());
+        account.setValue(c.getAccount());
+        level.setValue(c.getLevel());
+        category.setValue(c.getCategory());
+    }
+    
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
     }

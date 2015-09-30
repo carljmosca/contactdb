@@ -20,4 +20,7 @@ public class AtBaseRecord {
     @JsonIgnore
     private String id;
     
+    @JsonIgnore
+    private boolean selected;
+    
 }

@@ -15,17 +15,22 @@ import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.dto.LevelRecord;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
+import com.github.moscaville.contactsdb.util.Utility;
 import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import java.util.List;
@@ -54,6 +59,7 @@ public class ContactsView extends CssLayout implements View {
     HorizontalLayout vControls;
     private Button btnEdit;
     private Button btnDuplicate;
+    private Button btnExport;
     private TextField tfFilter;
     @Autowired
     ContactController controller;
@@ -73,11 +79,12 @@ public class ContactsView extends CssLayout implements View {
         List<CategoryRecord> categories = categoryController.loadItems(100, 0, new CategoryRecord());
         List<LevelRecord> levels = levelController.loadItems(100, 0, new LevelRecord());
         List<RepresentativeRecord> representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
-        
+
         contactTable = new ContactTable(controller, categories, levels, representatives);
-                                 
+
         btnEdit = new Button("Edit");
         btnDuplicate = new Button("Duplicate");
+        btnExport = new Button("Export");
         tfFilter = new TextField();
         tfFilter.setImmediate(true);
         tfFilter.setInputPrompt("Filter");
@@ -90,6 +97,7 @@ public class ContactsView extends CssLayout implements View {
         vControls.addComponent(tfFilter);
         vControls.addComponent(btnEdit);
         vControls.addComponent(btnDuplicate);
+        vControls.addComponent(btnExport);
         hLayout.setSizeFull();
 
         //contactTable = new ContactTable();
@@ -119,8 +127,16 @@ public class ContactsView extends CssLayout implements View {
                 ContactRecord contact = new ContactRecord();
                 BeanUtils.copyProperties(selected, contact);
                 editContact(contact);
+            } else {
+                Notification.show("",
+                  "Please select a record for duplication",
+                  Notification.Type.WARNING_MESSAGE);
             }
         });
+        
+        Resource res = new FileResource(Utility.getExportedContacts());
+        FileDownloader fd = new FileDownloader(res);
+        fd.extend(btnExport);
 
     }
 
