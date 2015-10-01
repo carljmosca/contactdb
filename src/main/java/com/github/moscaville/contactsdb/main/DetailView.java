@@ -173,7 +173,8 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.setSpacing(true);
         btnNew = new Button("New");
         btnNew.addClickListener((Button.ClickEvent event) -> {
-            populateFields(new ContactRecord());
+            contact = new ContactRecord();
+            bind(contact);
         });
         buttonLayout.addComponent(btnNew);
         btnSave = new Button("Save");
@@ -200,8 +201,8 @@ public class DetailView extends CssLayout implements View {
             ContactRecord duplicate;
             try {
                 duplicate = (ContactRecord) BeanUtils.cloneBean(contact);
-                populateFields(duplicate);
-                contact.setId(null);
+                duplicate.setId(null);
+                bind(duplicate);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
                 Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -216,7 +217,7 @@ public class DetailView extends CssLayout implements View {
         mainLayout.addComponent(notesLayout);
         mainLayout.addComponent(buttonLayout);
         addComponent(mainLayout);
-        bind();
+        bind(MainUI.get().getContact());
     }
 
     private TextField createTextField(String inputPrompt, HorizontalLayout horizontalLayout) {
@@ -256,9 +257,9 @@ public class DetailView extends CssLayout implements View {
         return comboBox;
     }
 
-    private void bind() {
+    private void bind(ContactRecord contact) {
+        this.contact = contact; 
         fieldGroup = new BeanFieldGroup<>(ContactRecord.class);
-        contact = MainUI.get().getContact();
         fieldGroup.setItemDataSource(contact);
         fieldGroup.setBuffered(true);
         fieldGroup.bindMemberFields(this);
@@ -266,6 +267,7 @@ public class DetailView extends CssLayout implements View {
     }
 
     private void populateFields(ContactRecord c) {
+        fieldGroup.setBuffered(false);
         firstName.setValue(c.getFirstName());
         lastName.setValue(c.getLastName());
         companyName.setValue(c.getCompanyName());
@@ -280,10 +282,12 @@ public class DetailView extends CssLayout implements View {
         account.setValue(c.getAccount());
         level.setValue(c.getLevel());
         category.setValue(c.getCategory());
+        fieldGroup.setBuffered(true);
     }
     
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
+        bind(MainUI.get().getContact());
     }
 
 }
