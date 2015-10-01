@@ -19,6 +19,7 @@ import com.github.moscaville.contactsdb.dto.RecordWrapper;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.util.RepresentativeUIConverter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -177,9 +178,16 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.addComponent(btnNew);
         btnSave = new Button("Save");
         btnSave.addClickListener((Button.ClickEvent event) -> {
-            RecordWrapper<ContactRecord> recordWrapper = new RecordWrapper();
-            recordWrapper.setFields(contact);
-            controller.saveItem(recordWrapper, contact.getId());
+            if (fieldGroup.isModified()) {
+                try {
+                    fieldGroup.commit();
+                } catch (FieldGroup.CommitException ex) {
+                    Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                RecordWrapper<ContactRecord> recordWrapper = new RecordWrapper();
+                recordWrapper.setFields(contact);
+                controller.saveItem(recordWrapper, contact.getId());
+            }
         });
         buttonLayout.addComponent(btnSave);
         btnCancel = new Button("Cancel");

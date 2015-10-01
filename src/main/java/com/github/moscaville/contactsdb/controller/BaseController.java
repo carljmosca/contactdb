@@ -98,7 +98,7 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             HttpEntity<RecordWrapper> request = new HttpEntity<>(recordWrapper, headers);
             try {
                 uri = new URI(sUri.toString());
-                restTemplate.put(uri, request);
+                    restTemplate.put(uri, request);
                 result = "";
             } catch (RestClientException e) {
                 if (e instanceof HttpStatusCodeException) {
