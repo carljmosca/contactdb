@@ -10,6 +10,7 @@ import com.github.moscaville.contactsdb.ui.ScrollingTableEventListener;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -25,6 +26,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     private final List<LevelRecord> levels;
     private final List<CategoryRecord> categories;
     private final List<RepresentativeRecord> representatives;
+    private boolean selected = false;
 
     private static final int BATCH_SIZE = 20;
 
@@ -36,7 +38,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         this.representatives = representatives;
         init();
     }
-
+    
     private void init() {
 
         contacts = new ArrayList<>();
@@ -51,33 +53,59 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         addGeneratedColumn("categoryName", new LookupColumnGenerator());
         addGeneratedColumn("levelName", new LookupColumnGenerator());
         addGeneratedColumn("accountName", new LookupColumnGenerator());
-        setContainerDataSource(container);
 
-        setVisibleColumns("selected", "companyName", "firstName", "lastName",
+        addGeneratedColumn("selectedCb", (final Table source, final Object itemId, final Object columnId) -> {
+            final ContactRecord bean = (ContactRecord) itemId;
+
+            final CheckBox checkBox = new CheckBox();
+            checkBox.setImmediate(true);
+            checkBox.addListener((Event event) -> {
+                if (event.getComponent() instanceof CheckBox) {
+                    CheckBox cb = (CheckBox) event.getComponent();
+                    bean.setSelected(cb.getValue());
+                }
+            });
+            if (bean.isSelected()) {
+                checkBox.setValue(true);
+            } else {
+                checkBox.setValue(false);
+            }
+            return checkBox;
+        });
+
+        setContainerDataSource(container);
+        setVisibleColumns("selectedCb", "companyName", "firstName", "lastName",
                 "email", "workPhone", "cellPhone", "address", "city",
                 "state", "zip", "categoryName", "levelName", "accountName");
-
-        setColumnHeaders("", "Company", "First", "Last", 
-                "Email", "Work Phone", "Cell Phone", "Address", "City", 
+        setColumnHeaders("", "Company", "First", "Last",
+                "Email", "Work Phone", "Cell Phone", "Address", "City",
                 "State", "Postal Code", "Category", "Level", "Account");
         setColumnCollapsingAllowed(true);
-        //setColumnCollapsed("integerProperty", true);
-        //setColumnCollapsed("bigDecimalProperty", true);
 
         setSelectable(true);
         setImmediate(true);
 
-        // Show categories as a comma separated list
-//        setConverter("contactTypes", new CollectionToStringConverter());
         addScrollListener(this);
         addHeaderClickListener((HeaderClickEvent event) -> {
-            controller.setSortColumn(event.getPropertyId().toString());
-            reset();
-        });
+            String column = (String) event.getPropertyId();
+            if ("selectedCb".equals(column)) {
+                selectAll();
+            } else {
+                controller.setSortColumn(event.getPropertyId().toString());
+                reset();
+            }
+        });        
         loadRecords();
-
     }
 
+    private void selectAll() {
+        selected = !selected;
+        container.getItemIds().stream().forEach((cr) -> {
+            ((ContactRecord)cr).setSelected(selected);
+        });
+        refreshRowCache();
+    }
+    
     private void reset() {
         container.removeAllItems();
         loadRecords();

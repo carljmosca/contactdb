@@ -13,7 +13,7 @@ import lombok.Data;
  *
  * @author moscac
  */
-@Data
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AtBaseRecord {
     
@@ -22,5 +22,26 @@ public class AtBaseRecord {
     
     @JsonIgnore
     private boolean selected;
+    
+    @JsonIgnore
+    private String modified;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+    
+    
     
 }

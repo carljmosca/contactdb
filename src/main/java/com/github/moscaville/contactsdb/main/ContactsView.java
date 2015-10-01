@@ -129,8 +129,8 @@ public class ContactsView extends CssLayout implements View {
                 editContact(contact);
             } else {
                 Notification.show("",
-                  "Please select a record for duplication",
-                  Notification.Type.WARNING_MESSAGE);
+                        "Please select a record for duplication",
+                        Notification.Type.WARNING_MESSAGE);
             }
         });
         
