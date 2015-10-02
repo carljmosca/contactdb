@@ -98,7 +98,7 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             HttpEntity<RecordWrapper> request = new HttpEntity<>(recordWrapper, headers);
             try {
                 uri = new URI(sUri.toString());
-                    restTemplate.put(uri, request);
+                restTemplate.put(uri, request);
                 result = "";
             } catch (RestClientException e) {
                 if (e instanceof HttpStatusCodeException) {
@@ -109,6 +109,15 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
                 Logger.getLogger(BaseController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return result;
+    }
+
+    public String deleteItem(String id) {
+        String result = "";
+        StringBuilder uri = new StringBuilder();
+        uri.append(AIRTABLE_ENDPOINT_URL).append(getAirTableName());
+        uri.append("/").append(id);
+        restTemplate.delete(uri.toString());
         return result;
     }
 

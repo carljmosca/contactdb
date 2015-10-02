@@ -58,7 +58,7 @@ public class ContactsView extends CssLayout implements View {
     HorizontalLayout hLayout = new HorizontalLayout();
     HorizontalLayout vControls;
     private Button btnEdit;
-    private Button btnDuplicate;
+    //private Button btnDuplicate;
     private Button btnExport;
     private TextField tfFilter;
     @Autowired
@@ -83,7 +83,7 @@ public class ContactsView extends CssLayout implements View {
         contactTable = new ContactTable(controller, categories, levels, representatives);
 
         btnEdit = new Button("Edit");
-        btnDuplicate = new Button("Duplicate");
+        //btnDuplicate = new Button("Duplicate");
         btnExport = new Button("Export");
         tfFilter = new TextField();
         tfFilter.setImmediate(true);
@@ -96,7 +96,7 @@ public class ContactsView extends CssLayout implements View {
         vControls.setMargin(true);
         vControls.addComponent(tfFilter);
         vControls.addComponent(btnEdit);
-        vControls.addComponent(btnDuplicate);
+        //vControls.addComponent(btnDuplicate);
         vControls.addComponent(btnExport);
         hLayout.setSizeFull();
 
@@ -121,18 +121,18 @@ public class ContactsView extends CssLayout implements View {
             editContact(getSelectedContact());
         });
 
-        btnDuplicate.addClickListener((Button.ClickEvent event) -> {
-            ContactRecord selected = getSelectedContact();
-            if (selected != null) {
-                ContactRecord contact = new ContactRecord();
-                BeanUtils.copyProperties(selected, contact);
-                editContact(contact);
-            } else {
-                Notification.show("",
-                        "Please select a record for duplication",
-                        Notification.Type.WARNING_MESSAGE);
-            }
-        });
+//        btnDuplicate.addClickListener((Button.ClickEvent event) -> {
+//            ContactRecord selected = getSelectedContact();
+//            if (selected != null) {
+//                ContactRecord contact = new ContactRecord();
+//                BeanUtils.copyProperties(selected, contact);
+//                editContact(contact);
+//            } else {
+//                Notification.show("",
+//                        "Please select a record for duplication",
+//                        Notification.Type.WARNING_MESSAGE);
+//            }
+//        });
         
         Resource res = new FileResource(Utility.getExportedContacts());
         FileDownloader fd = new FileDownloader(res);

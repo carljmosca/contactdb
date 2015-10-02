@@ -94,6 +94,7 @@ public class DetailView extends CssLayout implements View {
     private Button btnSave;
     private Button btnDuplicate;
     private Button btnCancel;
+    private Button btnDelete;
     private List<LookupBase> categories;
     private List<LookupBase> representatives;
     private List<LookupBase> levels;
@@ -202,13 +203,18 @@ public class DetailView extends CssLayout implements View {
             try {
                 duplicate = (ContactRecord) BeanUtils.cloneBean(contact);
                 duplicate.setId(null);
-                bind(duplicate);
+                contact = duplicate;
+                bind(contact);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
                 Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
         buttonLayout.addComponent(btnDuplicate);
-
+        btnDelete = new Button("Delete");
+        btnDelete.addClickListener((Button.ClickEvent event) -> {
+            controller.deleteItem(contact.getId());
+        });
+        buttonLayout.addComponent(btnDelete);
         mainLayout.addComponent(nameLayout);
         mainLayout.addComponent(classificationLayout);
         mainLayout.addComponent(emailPhoneLayout);
