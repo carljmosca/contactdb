@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.spring.sidebar.annotation.FontAwesomeIcon;
 import org.vaadin.spring.sidebar.annotation.SideBarItem;
 
@@ -212,7 +213,11 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.addComponent(btnDuplicate);
         btnDelete = new Button("Delete");
         btnDelete.addClickListener((Button.ClickEvent event) -> {
-            controller.deleteItem(contact.getId());
+            ConfirmDialog.show(MainUI.getCurrent(), "Are you sure?", (ConfirmDialog dialog) -> {
+                if (dialog.isConfirmed()) {
+                    controller.deleteItem(contact.getId());
+                }
+            });
         });
         buttonLayout.addComponent(btnDelete);
         mainLayout.addComponent(nameLayout);
@@ -264,7 +269,7 @@ public class DetailView extends CssLayout implements View {
     }
 
     private void bind(ContactRecord contact) {
-        this.contact = contact; 
+        this.contact = contact;
         fieldGroup = new BeanFieldGroup<>(ContactRecord.class);
         fieldGroup.setItemDataSource(contact);
         fieldGroup.setBuffered(true);
@@ -277,7 +282,7 @@ public class DetailView extends CssLayout implements View {
         firstName.setValue(c.getFirstName());
         lastName.setValue(c.getLastName());
         companyName.setValue(c.getCompanyName());
-        address.setValue(c.getAddress());        
+        address.setValue(c.getAddress());
         city.setValue(c.getCity());
         state.setValue(c.getState());
         zip.setValue(c.getZip());
@@ -290,7 +295,7 @@ public class DetailView extends CssLayout implements View {
         category.setValue(c.getCategory());
         fieldGroup.setBuffered(true);
     }
-    
+
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         bind(MainUI.get().getContact());

@@ -5,8 +5,6 @@
  */
 package com.github.moscaville.contactsdb.util;
 
-import java.io.File;
-
 /**
  *
  * @author moscac
@@ -28,8 +26,5 @@ public class Utility {
         result.append(name.substring(0, 1).toUpperCase()).append(name.substring(1));
         return result.toString();
     }
-    
-    public static File getExportedContacts() {
-        return new File("/Users/moscac/Downloads/foo.pdf");
-    }
+
 }

@@ -27,6 +27,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     private final List<CategoryRecord> categories;
     private final List<RepresentativeRecord> representatives;
     private boolean selected = false;
+    private boolean allColumns = true;
 
     private static final int BATCH_SIZE = 20;
 
@@ -38,7 +39,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         this.representatives = representatives;
         init();
     }
-    
+
     private void init() {
 
         contacts = new ArrayList<>();
@@ -94,18 +95,29 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
                 controller.setSortColumn(event.getPropertyId().toString());
                 reset();
             }
-        });        
+        });
         loadRecords();
+    }
+
+    public void toggleVisibleColumns() {
+        allColumns = !allColumns;
+        if (allColumns) {
+            setVisibleColumns("selectedCb", "companyName", "firstName", "lastName",
+                    "email", "workPhone", "cellPhone", "address", "city",
+                    "state", "zip", "categoryName", "levelName", "accountName");
+        } else {
+            setVisibleColumns("companyName", "firstName", "lastName", "email");
+        }
     }
 
     private void selectAll() {
         selected = !selected;
         container.getItemIds().stream().forEach((cr) -> {
-            ((ContactRecord)cr).setSelected(selected);
+            ((ContactRecord) cr).setSelected(selected);
         });
         refreshRowCache();
     }
-    
+
     private void reset() {
         container.removeAllItems();
         loadRecords();
