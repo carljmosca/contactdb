@@ -56,6 +56,14 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
 
     private static void exportFile(String fileName, Container dataSource) {
 
+        boolean selectedOnly = false;
+        for (Object rec : dataSource.getItemIds()) {
+            if (((ContactRecord)rec).isSelected()) {
+                selectedOnly = true;
+                break;
+            }
+        }
+        
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(fileName);
@@ -63,7 +71,7 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
             fileWriter.append(NEW_LINE_SEPARATOR);
             for (Object rec : dataSource.getItemIds()) {
                 ContactRecord contact = (ContactRecord) rec;
-                if (!contact.isSelected()) {
+                if (selectedOnly && !contact.isSelected()) {
                     continue;
                 }
                 fileWriter.append(stringFilter(contact.getCompanyName()));
@@ -85,7 +93,6 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
                 fileWriter.append(stringFilter(contact.getWorkPhone()));
                 fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(stringFilter(contact.getEmail()));
-                fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(NEW_LINE_SEPARATOR);
             }
         } catch (Exception e) {

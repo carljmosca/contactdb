@@ -7,6 +7,7 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.ValoSideBarUI;
 import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.LevelController;
@@ -190,12 +191,14 @@ public class DetailView extends CssLayout implements View {
                 RecordWrapper<ContactRecord> recordWrapper = new RecordWrapper();
                 recordWrapper.setFields(contact);
                 controller.saveItem(recordWrapper, contact.getId());
+                enableButtons(false);
             }
         });
         buttonLayout.addComponent(btnSave);
         btnCancel = new Button("Cancel");
         btnCancel.addClickListener((Button.ClickEvent event) -> {
             fieldGroup.discard();
+            enableButtons(false);
         });
         buttonLayout.addComponent(btnCancel);
         btnDuplicate = new Button("Duplicate");
@@ -206,6 +209,8 @@ public class DetailView extends CssLayout implements View {
                 duplicate.setId(null);
                 contact = duplicate;
                 bind(contact);
+                btnSave.setEnabled(false);
+                btnCancel.setEnabled(false);
             } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException ex) {
                 Logger.getLogger(DetailView.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -239,6 +244,9 @@ public class DetailView extends CssLayout implements View {
         if (horizontalLayout != null) {
             horizontalLayout.addComponent(textField);
         }
+        textField.addListener((Event event) -> {
+            enableButtons(true);
+        });
         return textField;
     }
 
@@ -299,6 +307,15 @@ public class DetailView extends CssLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         bind(MainUI.get().getContact());
+        enableButtons(false);
+    }
+
+    private void enableButtons(boolean enable) {
+        btnSave.setEnabled(enable);
+        btnCancel.setEnabled(enable);
+        btnNew.setEnabled(!enable);
+        btnDuplicate.setEnabled(!enable);
+        btnDelete.setEnabled(!enable);
     }
 
 }

@@ -11,12 +11,13 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.CustomTable;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.List;
+import org.tepi.filtertable.FilterTable;
 
 public class ContactTable extends ScrollingTable implements ScrollingTableEventListener {
 
@@ -28,6 +29,9 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
     private final List<RepresentativeRecord> representatives;
     private boolean selected = false;
     private boolean allColumns = true;
+    private final String[] VISIBLE_COLUMNS = {"selectedCb", "companyName", "firstName", "lastName",
+        "email", "workPhone", "cellPhone", "address", "city",
+        "state", "zip", "categoryName", "levelName", "accountName"};
 
     private static final int BATCH_SIZE = 20;
 
@@ -55,7 +59,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         addGeneratedColumn("levelName", new LookupColumnGenerator());
         addGeneratedColumn("accountName", new LookupColumnGenerator());
 
-        addGeneratedColumn("selectedCb", (final Table source, final Object itemId, final Object columnId) -> {
+        addGeneratedColumn("selectedCb", (final CustomTable source, final Object itemId, final Object columnId) -> {
             final ContactRecord bean = (ContactRecord) itemId;
 
             final CheckBox checkBox = new CheckBox();
@@ -83,6 +87,13 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
                 "State", "Postal Code", "Category", "Level", "Account");
         setColumnCollapsingAllowed(true);
 
+        setFilterBarVisible(true);
+        setFilterFieldVisible("selectedCb", false);
+
+        for (String column : VISIBLE_COLUMNS) {
+            addFilterChangeListeners(column);
+        }
+
         setSelectable(true);
         setImmediate(true);
 
@@ -97,6 +108,17 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
             }
         });
         loadRecords();
+    }
+
+    private void addFilterChangeListeners(String field) {
+        getFilterField(field).addListener((Event event) -> {
+            if (event.getComponent() instanceof TextField) {
+                TextField tf = (TextField) event.getComponent();
+                if (tf.getValue().length() > 0) {
+                    loadRecords();
+                }
+            }
+        });
     }
 
     public void toggleVisibleColumns() {
@@ -157,7 +179,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
         }
     }
 
-    class LookupColumnGenerator implements Table.ColumnGenerator {
+    class LookupColumnGenerator implements FilterTable.ColumnGenerator {
 
         public LookupColumnGenerator() {
         }
@@ -167,8 +189,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
          * irrelevant in this use case.
          */
         @Override
-        public Component generateCell(Table source, Object record,
-                Object column) {
+        public Object generateCell(CustomTable source, Object record, Object column) {
             Label label = new Label();
             label.addStyleName("column-type-value");
             label.addStyleName("column-" + (String) column);
@@ -214,6 +235,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
             label.setValue(result.toString());
             return label;
         }
+
     }
 
 }

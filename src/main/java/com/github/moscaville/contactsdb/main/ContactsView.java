@@ -17,14 +17,10 @@ import com.github.moscaville.contactsdb.dto.LevelRecord;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.util.ExportOnDemandStreamResource;
 import com.github.moscaville.contactsdb.util.OnDemandFileDownloader;
-import com.github.moscaville.contactsdb.util.Utility;
-import com.vaadin.data.Property;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
@@ -85,16 +81,12 @@ public class ContactsView extends CssLayout implements View {
         btnEdit = new Button("Edit");
         btnExport = new Button("Export");
         btnColumns = new Button("Columns");
-        tfFilter = new TextField();
-        tfFilter.setImmediate(true);
-        tfFilter.setInputPrompt("Filter");
 
         vLayout = new VerticalLayout();
         vLayout.setMargin(true);
         vControls = new HorizontalLayout();
         vControls.setSpacing(true);
         vControls.setMargin(true);
-        vControls.addComponent(tfFilter);
         vControls.addComponent(btnEdit);
         //vControls.addComponent(btnDuplicate);
         vControls.addComponent(btnExport);
@@ -112,10 +104,6 @@ public class ContactsView extends CssLayout implements View {
             if (event.isDoubleClick()) {
                 editContact(getSelectedContact());
             }
-        });
-
-        tfFilter.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            contactTable.setFilter(tfFilter.getValue());
         });
 
         btnEdit.addClickListener((Button.ClickEvent event) -> {
