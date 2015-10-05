@@ -7,6 +7,7 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.ValoSideBarUI;
 import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.LevelController;

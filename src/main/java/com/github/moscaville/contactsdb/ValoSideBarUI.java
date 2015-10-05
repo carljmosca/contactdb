@@ -25,6 +25,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.i18n.annotation.EnableI18N;
 import org.vaadin.spring.sidebar.components.AbstractSideBar;
@@ -36,15 +37,15 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
  *
  * @author Petter Holmström (petter@vaadin.com)
  */
-@SpringUI(path="/valo")
-@Theme("valo") // A custom theme based on Valo
+@SpringUI(path = "/valo")
+@Theme("sidebar") // A custom theme based on Valo
 @Widgetset("AppWidgetset")
 @EnableI18N
 public class ValoSideBarUI extends AbstractSideBarUI {
 
     @Autowired
     ValoSideBar sideBar;
-    
+
     private ContactRecord contact;
 
     @Override
@@ -83,4 +84,7 @@ public class ValoSideBarUI extends AbstractSideBarUI {
         this.contact = contact;
     }
 
+    public static MainUI get() {
+        return (MainUI) UI.getCurrent();
+    }
 }

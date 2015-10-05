@@ -5,6 +5,7 @@
  */
 package com.github.moscaville.contactsdb;
 
+import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.spring.annotation.SpringUI;
@@ -19,21 +20,30 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
  * @author moscac
  */
 @SpringUI
-@Theme("valo") // A custom theme based on Valo
+@Theme("sidebar") // A custom theme based on Valo
 @Widgetset("AppWidgetset")
 @EnableI18N
 public class MainUI extends AbstractSideBarUI {
 
     @Autowired
     ValoSideBar sideBar;
+    private ContactRecord contact;
 
     @Override
     protected AbstractSideBar getSideBar() {
         return sideBar;
     }
     
-    public static ValoSideBarUI get() {
-        return (ValoSideBarUI) UI.getCurrent();
+    public static MainUI get() {
+        return (MainUI) UI.getCurrent();
     }
 
+        public ContactRecord getContact() {
+        return contact;
+    }
+
+    public void setContactRecord(ContactRecord contact) {
+        this.contact = contact;
+    }
+    
 }
