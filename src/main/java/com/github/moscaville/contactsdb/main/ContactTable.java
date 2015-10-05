@@ -115,7 +115,7 @@ public class ContactTable extends ScrollingTable implements ScrollingTableEventL
             if (event.getComponent() instanceof TextField) {
                 TextField tf = (TextField) event.getComponent();
                 if (tf.getValue().length() > 0) {
-                    loadRecords();
+                    reset();
                 }
             }
         });
