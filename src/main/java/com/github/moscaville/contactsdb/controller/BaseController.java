@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import static java.util.Collections.list;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,6 +45,7 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
     private final RestTemplate restTemplate;
     private final List<ClientHttpRequestInterceptor> interceptors;
     private final String AIRTABLE_ENDPOINT_URL;
+    private final int DEFAULT_BATCH_SIZE = 100;
     //private final int TEST_CONTAINER_SIZE = 10000;
     private String sortColumn;
 
@@ -143,6 +145,18 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
             }
         }
         return result;
+    }
+
+    public List<T> loadAllItems(T t) {
+        List<T> list = new ArrayList<>();
+        int itemsLoaded = 0;
+        while (true) {
+            list.addAll(loadItems(DEFAULT_BATCH_SIZE, itemsLoaded, t));
+            if (list.size() < (itemsLoaded + DEFAULT_BATCH_SIZE))
+                break;
+            itemsLoaded = list.size();
+        }
+        return list;
     }
 
     public void setSortColumn(String sortColumn) {

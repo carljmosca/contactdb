@@ -7,7 +7,6 @@ package com.github.moscaville.contactsdb.main;
 
 import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
-import com.github.moscaville.contactsdb.ValoSideBarUI;
 import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.LevelController;
@@ -18,6 +17,8 @@ import com.github.moscaville.contactsdb.dto.LevelRecord;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
 import com.github.moscaville.contactsdb.util.ExportOnDemandStreamResource;
 import com.github.moscaville.contactsdb.util.OnDemandFileDownloader;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -27,6 +28,9 @@ import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.HeaderCell;
+import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -48,7 +52,8 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @ViewScope
 public class ContactsView extends CssLayout implements View {
 
-    private ContactTable contactTable;
+    private Grid contactGrid;
+    private BeanContainer<String, ContactRecord> beans;
     final Panel pnlMain = new Panel();
     VerticalLayout vLayout;
     HorizontalLayout hLayout = new HorizontalLayout();
@@ -57,7 +62,9 @@ public class ContactsView extends CssLayout implements View {
     //private Button btnDuplicate;
     private Button btnExport;
     private Button btnColumns;
-    private TextField tfFilter;
+    private final String[] COLUMNS = {"selected", "companyName", "firstName", "lastName",
+        "email", "workPhone", "cellPhone", "address", "city",
+        "state", "zip", "category", "level", "account"};
     @Autowired
     ContactController controller;
     @Autowired
@@ -77,7 +84,15 @@ public class ContactsView extends CssLayout implements View {
         List<LevelRecord> levels = levelController.loadItems(100, 0, new LevelRecord());
         List<RepresentativeRecord> representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
 
-        contactTable = new ContactTable(controller, categories, levels, representatives);
+        //contactTable = new ContactTable(controller, categories, levels, representatives);
+        beans = new BeanContainer<>(ContactRecord.class);
+        beans.setBeanIdProperty("id");
+        beans.addAll(controller.loadAllItems(new ContactRecord()));
+        contactGrid = new Grid(beans);
+        contactGrid.setSizeFull();
+        addFilters();
+        contactGrid.setColumns((Object[]) COLUMNS);
+        contactGrid.setColumnOrder((Object[]) COLUMNS);
 
         btnEdit = new Button("Edit");
         btnExport = new Button("Export");
@@ -95,13 +110,13 @@ public class ContactsView extends CssLayout implements View {
         hLayout.setSizeFull();
 
         //contactTable = new ContactTable();
-        vLayout.addComponent(contactTable);
+        vLayout.addComponent(contactGrid);
         vLayout.setHeight("75%");
         addComponent(vControls);
         addComponent(vLayout);
         setSizeFull();
 
-        contactTable.addItemClickListener((ItemClickEvent event) -> {
+        contactGrid.addItemClickListener((ItemClickEvent event) -> {
             if (event.isDoubleClick()) {
                 editContact(getSelectedContact());
             }
@@ -112,12 +127,39 @@ public class ContactsView extends CssLayout implements View {
         });
 
         btnColumns.addClickListener((Button.ClickEvent event) -> {
-            contactTable.toggleVisibleColumns();
+            //contactTable.toggleVisibleColumns();
         });
 
-        OnDemandFileDownloader fd = new OnDemandFileDownloader(new ExportOnDemandStreamResource(contactTable.getContainerDataSource()));
+        OnDemandFileDownloader fd = new OnDemandFileDownloader(new ExportOnDemandStreamResource(contactGrid.getContainerDataSource()));
         fd.extend(btnExport);
 
+    }
+
+    private void addFilters() {
+        HeaderRow filterRow = contactGrid.appendHeaderRow();
+
+        for (Object pid : contactGrid.getContainerDataSource()
+                .getContainerPropertyIds()) {
+            HeaderCell cell = filterRow.getCell(pid);
+
+            // Have an input field to use for filter
+            TextField filterField = new TextField();
+            filterField.setColumns(COLUMNS.length);
+
+            // Update filter When the filter input is changed
+            filterField.addTextChangeListener(change -> {
+                // Can't modify filters so need to replace
+                beans.removeContainerFilters(pid);
+
+                // (Re)create the filter if necessary
+                if (!change.getText().isEmpty()) {
+                    beans.addContainerFilter(
+                            new SimpleStringFilter(pid,
+                                    change.getText(), true, false));
+                }
+            });
+            cell.setComponent(filterField);
+        }
     }
 
     @Override
@@ -131,10 +173,15 @@ public class ContactsView extends CssLayout implements View {
     }
 
     private ContactRecord getSelectedContact() {
+        Object selected;
+        if (contactGrid.getSelectedRow() == null) {
+            selected = beans.getIdByIndex(0);
+        } else {
+            selected = contactGrid.getSelectedRow();
+        }
         ContactRecord contact = null;
-        Object selected = contactTable.getValue();
-        if (selected instanceof ContactRecord) {
-            contact = (ContactRecord) selected;
+        if (selected != null) {
+            contact = beans.getItem(selected).getBean();
         }
         return contact;
     }
