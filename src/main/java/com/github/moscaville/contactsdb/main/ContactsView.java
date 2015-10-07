@@ -14,10 +14,17 @@ import com.github.moscaville.contactsdb.controller.RepresentativeController;
 import com.github.moscaville.contactsdb.dto.CategoryRecord;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.dto.LevelRecord;
+import com.github.moscaville.contactsdb.dto.LookupBase;
 import com.github.moscaville.contactsdb.dto.RepresentativeRecord;
+import com.github.moscaville.contactsdb.ui.LookupConverter;
 import com.github.moscaville.contactsdb.util.ExportOnDemandStreamResource;
 import com.github.moscaville.contactsdb.util.OnDemandFileDownloader;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -26,6 +33,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
@@ -34,6 +42,8 @@ import com.vaadin.ui.Grid.HeaderRow;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.renderers.TextRenderer;
+import static java.util.Collections.list;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +72,11 @@ public class ContactsView extends CssLayout implements View {
     //private Button btnDuplicate;
     private Button btnExport;
     private Button btnColumns;
-    private final String[] COLUMNS = {"selected", "companyName", "firstName", "lastName",
+    private final String[] COLUMNS = {"companyName", "firstName", "lastName",
         "email", "workPhone", "cellPhone", "address", "city",
         "state", "zip", "category", "level", "account"};
+    private final String[] FEWER_COLUMNS = {"companyName", "firstName", "lastName", "email"};
+    private boolean allColumns;
     @Autowired
     ContactController controller;
     @Autowired
@@ -73,16 +85,20 @@ public class ContactsView extends CssLayout implements View {
     CategoryController categoryController;
     @Autowired
     LevelController levelController;
+    private List<CategoryRecord> categories;
+    private List<LevelRecord> levels;
+    private List<RepresentativeRecord> representatives;
 
     public ContactsView() {
+        this.allColumns = true;
     }
 
     @PostConstruct
     void init() {
 
-        List<CategoryRecord> categories = categoryController.loadItems(100, 0, new CategoryRecord());
-        List<LevelRecord> levels = levelController.loadItems(100, 0, new LevelRecord());
-        List<RepresentativeRecord> representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
+        categories = categoryController.loadItems(100, 0, new CategoryRecord());
+        levels = levelController.loadItems(100, 0, new LevelRecord());
+        representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
 
         //contactTable = new ContactTable(controller, categories, levels, representatives);
         beans = new BeanContainer<>(ContactRecord.class);
@@ -90,7 +106,10 @@ public class ContactsView extends CssLayout implements View {
         beans.addAll(controller.loadAllItems(new ContactRecord()));
         contactGrid = new Grid(beans);
         contactGrid.setSizeFull();
+        contactGrid.setSelectionMode(Grid.SelectionMode.MULTI);
+        addRenderersAndConverters();
         addFilters();
+        //addGeneratedColumns();
         contactGrid.setColumns((Object[]) COLUMNS);
         contactGrid.setColumnOrder((Object[]) COLUMNS);
 
@@ -127,39 +146,69 @@ public class ContactsView extends CssLayout implements View {
         });
 
         btnColumns.addClickListener((Button.ClickEvent event) -> {
-            //contactTable.toggleVisibleColumns();
+            toggleVisibleColumns();
         });
 
-        OnDemandFileDownloader fd = new OnDemandFileDownloader(new ExportOnDemandStreamResource(contactGrid.getContainerDataSource()));
+        OnDemandFileDownloader fd = new OnDemandFileDownloader(new ExportOnDemandStreamResource(contactGrid));
         fd.extend(btnExport);
 
     }
 
     private void addFilters() {
-        HeaderRow filterRow = contactGrid.appendHeaderRow();
-
-        for (Object pid : contactGrid.getContainerDataSource()
-                .getContainerPropertyIds()) {
-            HeaderCell cell = filterRow.getCell(pid);
-
-            // Have an input field to use for filter
-            TextField filterField = new TextField();
-            filterField.setColumns(COLUMNS.length);
-
-            // Update filter When the filter input is changed
-            filterField.addTextChangeListener(change -> {
-                // Can't modify filters so need to replace
-                beans.removeContainerFilters(pid);
-
-                // (Re)create the filter if necessary
-                if (!change.getText().isEmpty()) {
-                    beans.addContainerFilter(
-                            new SimpleStringFilter(pid,
-                                    change.getText(), true, false));
-                }
-            });
-            cell.setComponent(filterField);
+        if (contactGrid.getHeaderRowCount() > 1) {
+            contactGrid.removeHeaderRow(1);
         }
+        HeaderRow filterRow = contactGrid.appendHeaderRow();
+        contactGrid.getContainerDataSource()
+                .getContainerPropertyIds().stream().forEach((pid) -> {
+                    if (contactGrid.getColumn(pid) != null) {
+                        HeaderCell cell = filterRow.getCell(pid);
+
+                        // Have an input field to use for filter
+                        if ("selected".equals(pid)) {
+                            CheckBox checkBox = new CheckBox("", false);
+                            checkBox.addValueChangeListener((Property.ValueChangeEvent event) -> {
+                                beans.removeContainerFilters(pid);
+                                if (checkBox.getValue()) {
+                                    beans.addContainerFilter(new Compare.Equal(pid, checkBox.getValue()));
+                                }
+                            });
+                            cell.setComponent(checkBox);
+                        } else if ("category".equals(pid) || "level".equals(pid) || "account".equals(pid)) {
+                            TextField filterField = new TextField();
+                            filterField.setColumns(8);
+                            // Update filter When the filter input is changed
+                            filterField.addTextChangeListener(change -> {
+                                // Can't modify filters so need to replace
+                                beans.removeContainerFilters(pid);
+                                // (Re)create the filter if necessary
+                                if (!change.getText().isEmpty()) {
+                                    beans.addContainerFilter(
+                                            new CategoryFilter((String) pid,
+                                                    change.getText()));
+                                }
+                            });
+                            filterField.setImmediate(true);
+                            cell.setComponent(filterField);
+                        } else {
+                            TextField filterField = new TextField();
+                            filterField.setColumns(8);
+                            // Update filter When the filter input is changed
+                            filterField.addTextChangeListener(change -> {
+                                // Can't modify filters so need to replace
+                                beans.removeContainerFilters(pid);
+                                // (Re)create the filter if necessary
+                                if (!change.getText().isEmpty()) {
+                                    beans.addContainerFilter(
+                                            new SimpleStringFilter(pid,
+                                                    change.getText(), true, false));
+                                }
+                            });
+                            filterField.setImmediate(true);
+                            cell.setComponent(filterField);
+                        }
+                    }
+                });
     }
 
     @Override
@@ -174,16 +223,96 @@ public class ContactsView extends CssLayout implements View {
 
     private ContactRecord getSelectedContact() {
         Object selected;
-        if (contactGrid.getSelectedRow() == null) {
+        if (contactGrid.getSelectedRows().isEmpty()) {
             selected = beans.getIdByIndex(0);
         } else {
-            selected = contactGrid.getSelectedRow();
+            selected = contactGrid.getSelectedRows().toArray()[0];
         }
         ContactRecord contact = null;
         if (selected != null) {
             contact = beans.getItem(selected).getBean();
         }
         return contact;
+    }
+
+    private void addRenderersAndConverters() {
+        Grid.Column categoryColumn = contactGrid.getColumn("category");
+        if (categoryColumn != null) {
+            categoryColumn.setRenderer(new TextRenderer(), new LookupConverter(categories));
+        }
+        Grid.Column levelColumn = contactGrid.getColumn("level");
+        if (levelColumn != null) {
+            levelColumn.setRenderer(new TextRenderer(), new LookupConverter(levels));
+        }
+        Grid.Column representativeColumn = contactGrid.getColumn("account");
+        if (representativeColumn != null) {
+            representativeColumn.setRenderer(new TextRenderer(), new LookupConverter(representatives));
+        }
+
+    }
+
+    private void toggleVisibleColumns() {
+        allColumns = !allColumns;
+        if (allColumns) {
+            contactGrid.setColumns((Object[]) COLUMNS);
+            contactGrid.setColumnOrder((Object[]) COLUMNS);
+        } else {
+            contactGrid.setColumns((Object[]) FEWER_COLUMNS);
+            contactGrid.setColumnOrder((Object[]) FEWER_COLUMNS);
+        }
+        addFilters();
+        addRenderersAndConverters();
+    }
+
+    public class CategoryFilter implements Container.Filter {
+
+        protected String propertyId;
+        protected String value;
+
+        public CategoryFilter(String propertyId, String value) {
+            this.propertyId = propertyId;
+            this.value = value;
+        }
+
+        /**
+         * Tells if this filter works on the given property.
+         */
+        @Override
+        public boolean appliesToProperty(Object propertyId) {
+            return propertyId != null
+                    && propertyId.equals(this.propertyId);
+        }
+
+        @Override
+        public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
+            BeanItem beanItem = (BeanItem) item;
+            ContactRecord contactRecord = (ContactRecord) beanItem.getBean();
+            if (null != propertyId) {
+                switch (propertyId) {
+                    case "category":
+                        return compare(categories, contactRecord.getCategory());
+                    case "level":
+                        return compare(levels, contactRecord.getLevel());
+                    case "account":
+                        return compare(representatives, contactRecord.getAccount());
+                }
+            }
+            return false;
+        }
+
+        private boolean compare(List<? extends LookupBase> list, String[] ids) {
+            if (ids == null) {
+                return false;
+            }
+            for (LookupBase r : list) {
+                for (String s : ids) {
+                    if (r.getId().equals(s) && r.getName().toLowerCase().contains(value.toLowerCase())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
 
 }

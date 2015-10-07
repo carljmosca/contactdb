@@ -7,7 +7,8 @@ package com.github.moscaville.contactsdb.util;
 
 import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.util.OnDemandFileDownloader.OnDemandStreamResource;
-import com.vaadin.data.Container;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.ui.Grid;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,11 +30,11 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
     private static final String FILE_HEADER = "Company,FirstName,LastName,Address,City,State,Zip,Cell,Work,Email";
-    private final Container dataSource;
+    private final Grid grid;
     private final String fileName;
 
-    public ExportOnDemandStreamResource(Container dataSource) {
-        this.dataSource = dataSource;
+    public ExportOnDemandStreamResource(Grid grid) {
+        this.grid = grid;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
         fileName = "contactdb-" + sdf.format(new Date()) + ".csv";
     }
@@ -44,7 +46,7 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
 
     @Override
     public InputStream getStream() {
-        exportFile(System.getProperty("java.io.tmpdir") + getFilename(), dataSource);
+        exportFile(System.getProperty("java.io.tmpdir") + getFilename(), grid);
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(System.getProperty("java.io.tmpdir") + getFilename()));
@@ -54,26 +56,22 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
         return fis;
     }
 
-    private static void exportFile(String fileName, Container dataSource) {
+    private static void exportFile(String fileName, Grid grid) {
 
-        boolean selectedOnly = false;
-        for (Object rec : dataSource.getItemIds()) {
-            if (((ContactRecord)rec).isSelected()) {
-                selectedOnly = true;
-                break;
-            }
+        Collection<Object> ids;
+        if (grid.getSelectedRows().size() > 0) {
+            ids = grid.getSelectedRows();
+        } else {
+            ids = (Collection<Object>) grid.getContainerDataSource().getItemIds();
         }
-        
+
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(fileName);
             fileWriter.append(FILE_HEADER);
             fileWriter.append(NEW_LINE_SEPARATOR);
-            for (Object rec : dataSource.getItemIds()) {
-                ContactRecord contact = (ContactRecord) rec;
-                if (selectedOnly && !contact.isSelected()) {
-                    continue;
-                }
+            for (Object id : ids) {
+                ContactRecord contact = (ContactRecord)((BeanItem)grid.getContainerDataSource().getItem(id)).getBean();
                 fileWriter.append(stringFilter(contact.getCompanyName()));
                 fileWriter.append(COMMA_DELIMITER);
                 fileWriter.append(stringFilter(contact.getFirstName()));
