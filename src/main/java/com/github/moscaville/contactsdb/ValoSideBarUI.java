@@ -26,6 +26,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.i18n.annotation.EnableI18N;
 import org.vaadin.spring.sidebar.components.AbstractSideBar;
@@ -37,7 +38,7 @@ import org.vaadin.spring.sidebar.components.ValoSideBar;
  *
  * @author Petter Holmström (petter@vaadin.com)
  */
-@SpringUI(path = "/valo")
+@SpringUI
 @Theme("sidebar") // A custom theme based on Valo
 @Widgetset("AppWidgetset")
 @EnableI18N
@@ -45,7 +46,13 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
     @Autowired
     ValoSideBar sideBar;
-
+    @Autowired
+    private HttpSession httpSession;
+    public static final String ERROR_ATTRIBUTE = "ERROR";
+    public static final String EMAIL_ATTRIBUTE = "EMAIL";
+    private boolean loggedIn;
+    private String email;
+    private String error;
     private ContactRecord contact;
 
     @Override
@@ -53,14 +60,16 @@ public class ValoSideBarUI extends AbstractSideBarUI {
         super.init(vaadinRequest);
         CssLayout header = new CssLayout();
 
+        error = (String) httpSession.getAttribute(ERROR_ATTRIBUTE);
+        email = (String) httpSession.getAttribute(EMAIL_ATTRIBUTE);
+        loggedIn = email != null && !email.isEmpty();
+
         MenuBar menuBar = new MenuBar();
         header.addComponent(menuBar);
 
         MenuBar.MenuItem settingsItem = menuBar.addItem("", FontAwesome.WRENCH, null);
 
         sideBar.setHeader(header);
-        //categories = categoryController.loadItems(100, 0, new CategoryRecord());
-        //representatives = representativeController.loadItems(100, 0, new RepresentativeRecord());
     }
 
     private void showLogo() {
@@ -84,7 +93,32 @@ public class ValoSideBarUI extends AbstractSideBarUI {
         this.contact = contact;
     }
 
-    public static MainUI get() {
-        return (MainUI) UI.getCurrent();
+    public static ValoSideBarUI get() {
+        return (ValoSideBarUI) UI.getCurrent();
     }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        this.loggedIn = loggedIn;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
 }

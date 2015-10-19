@@ -5,8 +5,8 @@
  */
 package com.github.moscaville.contactsdb.main;
 
-import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
+import com.github.moscaville.contactsdb.ValoSideBarUI;
 import com.github.moscaville.contactsdb.controller.CategoryController;
 import com.github.moscaville.contactsdb.controller.ContactController;
 import com.github.moscaville.contactsdb.controller.LevelController;
@@ -43,7 +43,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.TextRenderer;
-import static java.util.Collections.list;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +53,10 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
  *
  * @author moscac
  */
-@SpringView(name = "")
+@SpringView(name = ContactsView.VIEW_NAME)
 @SideBarItem(sectionId = Sections.CONTACTS,
         caption = "All",
-        order = 1)
+        order = 20)
 @FontAwesomeIcon(FontAwesome.TABLE)
 @ViewScope
 public class ContactsView extends CssLayout implements View {
@@ -88,6 +87,7 @@ public class ContactsView extends CssLayout implements View {
     private List<CategoryRecord> categories;
     private List<LevelRecord> levels;
     private List<RepresentativeRecord> representatives;
+    public static final String VIEW_NAME = "contacts";
 
     public ContactsView() {
         this.allColumns = true;
@@ -217,8 +217,8 @@ public class ContactsView extends CssLayout implements View {
     }
 
     private void editContact(ContactRecord contact) {
-        MainUI.get().setContactRecord(contact);
-        MainUI.getCurrent().getNavigator().navigateTo(DetailView.VIEW_NAME);
+        ValoSideBarUI.get().setContactRecord(contact);
+        ValoSideBarUI.getCurrent().getNavigator().navigateTo(DetailView.VIEW_NAME);
     }
 
     private ContactRecord getSelectedContact() {

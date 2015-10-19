@@ -5,7 +5,6 @@
  */
 package com.github.moscaville.contactsdb.main;
 
-import com.github.moscaville.contactsdb.MainUI;
 import com.github.moscaville.contactsdb.Sections;
 import com.github.moscaville.contactsdb.ValoSideBarUI;
 import com.github.moscaville.contactsdb.controller.CategoryController;
@@ -53,7 +52,7 @@ import org.vaadin.spring.sidebar.annotation.SideBarItem;
 @SpringView(name = DetailView.VIEW_NAME)
 @SideBarItem(sectionId = Sections.CONTACTS,
         caption = "Details",
-        order = 1)
+        order = 30)
 @FontAwesomeIcon(FontAwesome.USER)
 @ViewScope
 public class DetailView extends CssLayout implements View {
@@ -66,7 +65,7 @@ public class DetailView extends CssLayout implements View {
     RepresentativeController representativeController;
     @Autowired
     LevelController levelController;
-    public static final String VIEW_NAME = "DetailView";
+    public static final String VIEW_NAME = "details";
     protected BeanFieldGroup<ContactRecord> fieldGroup;
     protected BeanItem<ContactRecord> contactRecordBeanItem;
     private ContactRecord contact;
@@ -218,7 +217,7 @@ public class DetailView extends CssLayout implements View {
         buttonLayout.addComponent(btnDuplicate);
         btnDelete = new Button("Delete");
         btnDelete.addClickListener((Button.ClickEvent event) -> {
-            ConfirmDialog.show(MainUI.getCurrent(), "Are you sure?", (ConfirmDialog dialog) -> {
+            ConfirmDialog.show(ValoSideBarUI.getCurrent(), "Are you sure?", (ConfirmDialog dialog) -> {
                 if (dialog.isConfirmed()) {
                     controller.deleteItem(contact.getId());
                 }
@@ -233,7 +232,7 @@ public class DetailView extends CssLayout implements View {
         mainLayout.addComponent(notesLayout);
         mainLayout.addComponent(buttonLayout);
         addComponent(mainLayout);
-        bind(MainUI.get().getContact());
+        bind(ValoSideBarUI.get().getContact());
     }
 
     private TextField createTextField(String inputPrompt, HorizontalLayout horizontalLayout) {
@@ -306,7 +305,7 @@ public class DetailView extends CssLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        bind(MainUI.get().getContact());
+        bind(ValoSideBarUI.get().getContact());
         enableButtons(false);
     }
 
