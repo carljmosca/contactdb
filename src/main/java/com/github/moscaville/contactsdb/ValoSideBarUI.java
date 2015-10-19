@@ -15,7 +15,9 @@
  */
 package com.github.moscaville.contactsdb;
 
+import com.github.moscaville.contactsdb.controller.UserController;
 import com.github.moscaville.contactsdb.dto.ContactRecord;
+import com.github.moscaville.contactsdb.dto.UserRecord;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.FontAwesome;
@@ -48,6 +50,8 @@ public class ValoSideBarUI extends AbstractSideBarUI {
     ValoSideBar sideBar;
     @Autowired
     private HttpSession httpSession;
+    @Autowired
+    private UserController userController;
     public static final String ERROR_ATTRIBUTE = "ERROR";
     public static final String EMAIL_ATTRIBUTE = "EMAIL";
     private boolean loggedIn;
@@ -62,7 +66,16 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
         error = (String) httpSession.getAttribute(ERROR_ATTRIBUTE);
         email = (String) httpSession.getAttribute(EMAIL_ATTRIBUTE);
-        loggedIn = email != null && !email.isEmpty();
+        loggedIn = false;
+        if (email != null) {
+            for (UserRecord userRecord : userController.loadAllItems(new UserRecord())) {
+                if (email.equals(userRecord.getEmail())) {
+                    loggedIn = true;
+                    break;
+                }
+            }
+            
+        }
 
         MenuBar menuBar = new MenuBar();
         header.addComponent(menuBar);
