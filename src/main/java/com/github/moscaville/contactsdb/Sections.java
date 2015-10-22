@@ -25,16 +25,10 @@ import org.vaadin.spring.sidebar.annotation.SideBarSections;
  * to lookup the annotations from the Spring application context.
  */
 @SideBarSections({
-        @SideBarSection(id = Sections.CONTACTS, caption = "Contacts"),
-        @SideBarSection(id = Sections.EXECUTION, caption = "Execution"),
-        @SideBarSection(id = Sections.REPORTING, caption = "Reporting"),
-        @SideBarSection(id = Sections.VAADIN_FONT_ICONS, caption = "Vaadin Font Icons", ui = ValoSideBarUI.class)
+        @SideBarSection(id = Sections.CONTACTS, caption = "Contacts")
 })
 @Component
 public class Sections {
 
     public static final String CONTACTS = "contacts";
-    public static final String EXECUTION = "execution";
-    public static final String REPORTING = "reporting";
-    public static final String VAADIN_FONT_ICONS = "vaadinFontIcons";
 }
