@@ -18,8 +18,6 @@ public class ContactsDbViewAccessControl implements ViewAccessControl {
 
     @Override
     public boolean isAccessGranted(UI ui, String viewName) {
-        if ("mainView".equals(viewName))
-            return true;
         return ValoSideBarUI.get().isLoggedIn();
     }
     
