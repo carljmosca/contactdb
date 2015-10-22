@@ -20,14 +20,12 @@ import com.github.moscaville.contactsdb.dto.ContactRecord;
 import com.github.moscaville.contactsdb.dto.UserRecord;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.i18n.annotation.EnableI18N;
@@ -59,6 +57,10 @@ public class ValoSideBarUI extends AbstractSideBarUI {
     private String error;
     private ContactRecord contact;
 
+    public ValoSideBarUI() {
+        
+    }
+    
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         super.init(vaadinRequest);
@@ -74,23 +76,27 @@ public class ValoSideBarUI extends AbstractSideBarUI {
                     break;
                 }
             }
-            
+
         }
 
-        MenuBar menuBar = new MenuBar();
-        header.addComponent(menuBar);
+        Label lblTitle = new Label("ContactsDb");
 
-        MenuBar.MenuItem settingsItem = menuBar.addItem("", FontAwesome.WRENCH, null);
+        loggedIn = email != null && !email.isEmpty();
 
+        lblTitle.addStyleName(ValoTheme.LABEL_H2);
+        lblTitle.setSizeFull();
+
+        header.addComponent(lblTitle);
+
+//        MenuBar menuBar = new MenuBar();
+//        header.addComponent(menuBar);
+//
+//        MenuBar.MenuItem settingsItem = menuBar.addItem("", FontAwesome.WRENCH, null);
         sideBar.setHeader(header);
-    }
-
-    private void showLogo() {
-        sideBar.setLogo(new Label(FontAwesome.ROCKET.getHtml(), ContentMode.HTML));
-    }
-
-    private void hideLogo() {
-        sideBar.setLogo(null);
+        sideBar.setVisible(loggedIn);
+        if (!loggedIn) {
+            getUI().getPage().setLocation("/signin");
+        }
     }
 
     @Override
@@ -112,26 +118,6 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
     public boolean isLoggedIn() {
         return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        this.loggedIn = loggedIn;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
-        this.error = error;
     }
 
 }
