@@ -81,8 +81,6 @@ public class ValoSideBarUI extends AbstractSideBarUI {
 
         Label lblTitle = new Label("ContactsDb");
 
-        loggedIn = email != null && !email.isEmpty();
-
         lblTitle.addStyleName(ValoTheme.LABEL_H2);
         lblTitle.setSizeFull();
 
