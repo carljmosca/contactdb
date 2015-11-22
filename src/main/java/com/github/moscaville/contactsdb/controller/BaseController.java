@@ -44,7 +44,7 @@ public abstract class BaseController<T extends AtBaseRecord, ID extends Serializ
     private final RestTemplate restTemplate;
     private final List<ClientHttpRequestInterceptor> interceptors;
     private final String AIRTABLE_ENDPOINT_URL;
-    private final int DEFAULT_BATCH_SIZE = 100;
+    private final int DEFAULT_BATCH_SIZE = 200;
     //private final int TEST_CONTAINER_SIZE = 10000;
     private String sortColumn;
 
