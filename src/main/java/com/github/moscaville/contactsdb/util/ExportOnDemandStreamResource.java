@@ -16,10 +16,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 /**
  *
@@ -29,7 +33,8 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
 
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
-    private static final String FILE_HEADER = "Company,FirstName,LastName,Address,City,State,Zip,Cell,Work,Email";
+    private static final Object[] FILE_HEADER = {"Company","FirstName","LastName",
+        "Address","City","State","Zip","Cell","Work","Email"};
     private final Grid grid;
     private final String fileName;
 
@@ -58,6 +63,8 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
 
     private static void exportFile(String fileName, Grid grid) {
 
+        CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
+        
         Collection<Object> ids;
         if (grid.getSelectedRows().size() > 0) {
             ids = grid.getSelectedRows();
@@ -66,32 +73,28 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
         }
 
         FileWriter fileWriter = null;
+        CSVPrinter csvFilePrinter = null;
+
         try {
             fileWriter = new FileWriter(fileName);
-            fileWriter.append(FILE_HEADER);
-            fileWriter.append(NEW_LINE_SEPARATOR);
+            csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
+            csvFilePrinter.printRecord(FILE_HEADER);
             for (Object id : ids) {
                 ContactRecord contact = (ContactRecord)((BeanItem)grid.getContainerDataSource().getItem(id)).getBean();
-                fileWriter.append(stringFilter(contact.getCompanyName()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getFirstName()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getLastName()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getAddress()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getCity()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getState()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getZip()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getCellPhone()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getWorkPhone()));
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(stringFilter(contact.getEmail()));
-                fileWriter.append(NEW_LINE_SEPARATOR);
+                List contactDataRecord = new ArrayList();
+                
+                contactDataRecord.add(contact.getCompanyName());
+                contactDataRecord.add(contact.getFirstName());
+                contactDataRecord.add(contact.getLastName());
+                contactDataRecord.add(contact.getAddress());
+                contactDataRecord.add(contact.getCity());
+                contactDataRecord.add(contact.getState());
+                contactDataRecord.add(contact.getZip());
+                contactDataRecord.add(contact.getCellPhone());
+                contactDataRecord.add(contact.getWorkPhone());
+                contactDataRecord.add(contact.getEmail());
+
+                csvFilePrinter.printRecord(contactDataRecord);
             }
         } catch (Exception e) {
             Logger.getLogger(Utility.class.getName()).log(Level.SEVERE, null, e);
@@ -108,10 +111,4 @@ public class ExportOnDemandStreamResource implements OnDemandStreamResource {
         }
     }
 
-    private static String stringFilter(String value) {
-        if (value == null) {
-            return "";
-        }
-        return value.trim();
-    }
 }
