@@ -257,6 +257,9 @@ public class DetailView extends CssLayout implements View {
         if (horizontalLayout != null) {
             horizontalLayout.addComponent(textArea);
         }
+        textArea.addListener((Event event) -> {
+            enableButtons(true);
+        });
         return textArea;
     }
 
@@ -271,6 +274,9 @@ public class DetailView extends CssLayout implements View {
             ids.add(item.getName());
         });
         comboBox.addItems(ids);
+        comboBox.addListener((Event event) -> {
+            enableButtons(true);
+        });
         horizontalLayout.addComponent(comboBox);
         return comboBox;
     }
@@ -284,25 +290,24 @@ public class DetailView extends CssLayout implements View {
         contactRecordBeanItem = fieldGroup.getItemDataSource();
     }
 
-    private void populateFields(ContactRecord c) {
-        fieldGroup.setBuffered(false);
-        firstName.setValue(c.getFirstName());
-        lastName.setValue(c.getLastName());
-        companyName.setValue(c.getCompanyName());
-        address.setValue(c.getAddress());
-        city.setValue(c.getCity());
-        state.setValue(c.getState());
-        zip.setValue(c.getZip());
-        cellPhone.setValue(c.getCellPhone());
-        workPhone.setValue(c.getWorkPhone());
-        email.setValue(c.getEmail());
-        notes.setValue(c.getNotes());
-        account.setValue(c.getAccount());
-        level.setValue(c.getLevel());
-        category.setValue(c.getCategory());
-        fieldGroup.setBuffered(true);
-    }
-
+//    private void populateFields(ContactRecord c) {
+//        fieldGroup.setBuffered(false);
+//        firstName.setValue(c.getFirstName());
+//        lastName.setValue(c.getLastName());
+//        companyName.setValue(c.getCompanyName());
+//        address.setValue(c.getAddress());
+//        city.setValue(c.getCity());
+//        state.setValue(c.getState());
+//        zip.setValue(c.getZip());
+//        cellPhone.setValue(c.getCellPhone());
+//        workPhone.setValue(c.getWorkPhone());
+//        email.setValue(c.getEmail());
+//        notes.setValue(c.getNotes());
+//        account.setValue(c.getAccount());
+//        level.setValue(c.getLevel());
+//        category.setValue(c.getCategory());
+//        fieldGroup.setBuffered(true);
+//    }
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
         bind(ValoSideBarUI.get().getContact());

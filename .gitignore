@@ -6,3 +6,4 @@ jrebel.xml
 nb-configuration.xml
 /.project
 /.settings/
+*.properties
